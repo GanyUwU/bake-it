@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 class RecipeDetailScreen extends StatefulWidget {
   final int recipeId;
 
-  RecipeDetailScreen({required this.recipeId});
+  const RecipeDetailScreen({super.key, required this.recipeId});
 
   @override
   _RecipeDetailScreenState createState() => _RecipeDetailScreenState();
