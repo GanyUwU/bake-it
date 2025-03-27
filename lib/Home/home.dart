@@ -15,10 +15,12 @@ class _HomeState extends State<Home> {
 
   // Function to send the POST request to your backend API
   Future<void> fetchRecipeData(String url) async {
-    final apiUrl = "http://127.0.0.1:5000"; // replace with your server address
+    //final apiUrl = "http://192.168.164.58:5000"; // replace with your server address
+    final apiUrl = "http://127.0.0.1:8000/scrape";
+
     try {
       final response = await http.post(
-        Uri.parse(apiUrl),
+        Uri.parse(apiUrl), 
         headers: {"Content-Type": "application/json"},
         body: json.encode({"url": url}),
       );

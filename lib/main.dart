@@ -1,6 +1,7 @@
 import 'package:a1/API/try.dart';
 import 'package:a1/Home/home.dart';
 import 'package:a1/Home/new_homepage.dart';
+import 'package:a1/Widget/recipe_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'Home/profile.dart';
@@ -14,7 +15,7 @@ Future<void> main() async {
   );
   runApp(MaterialApp(
       //home: Splash()
-      home: RecipeApp(),
+      home: Home(),
   ));
 }
 
@@ -29,11 +30,8 @@ class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
 
   final tabs=[
-    const Home(),
-    Container(
-      color: Colors.blue,
-      child: const Center(child: Text("Profile Placeholder")),
-    ),
+    const RecipeApp(),
+    const RecipeDetailScreen(recipeId:1)
   ];
 
   @override
