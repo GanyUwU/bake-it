@@ -30,8 +30,7 @@ class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
 
   final tabs=[
-    const RecipeApp(),
-    const RecipeDetailScreen(recipeId:1)
+    RecipeApp(),
   ];
 
   @override
