@@ -1,4 +1,6 @@
+import 'package:a1/API/try.dart';
 import 'package:a1/Home/home.dart';
+import 'package:a1/Home/new_homepage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'Home/profile.dart';
@@ -10,8 +12,9 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MaterialApp(
-      home: Splash()
+  runApp(MaterialApp(
+      //home: Splash()
+      home: RecipeApp(),
   ));
 }
 

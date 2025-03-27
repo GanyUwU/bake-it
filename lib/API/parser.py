@@ -163,7 +163,7 @@ class BakingRecipeScraper:
 def scrape_endpoint():
     # Expect a JSON payload with a "url" field.
     data = request.get_json()
-    url = data.get("url")
+    url = data.get("url") 
     if not url:
         return jsonify({"error": "No URL provided."}), 400
     try:
