@@ -1,12 +1,18 @@
-//ye wala with search fucntionality hai
-
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:a1/Home/search_display.dart'; 
 
-void main() {
-  runApp(RecipeApp());
+class RecipeApp extends StatefulWidget {
+  const RecipeApp({super.key});
+
+  @override
+  State<RecipeApp> createState() => _RecipeAppState();
+
 }
 
-class RecipeApp extends StatelessWidget {
+class _RecipeAppState extends State<RecipeApp> {
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -21,11 +27,14 @@ class RecipeApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+
   final List<Map<String, String>> categories = [
     {'name': 'Special', 'icon': '⭐'},
     {'name': 'Breakfast', 'icon': '🍳'},
@@ -83,8 +92,59 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  final TextEditingController _urlController = TextEditingController();
+  String _recipeResult = "";
+
+  // Function to send the POST request to your backend API
+  Future<void> fetchRecipeData(String url) async {
+    final apiUrl = "http://192.168.164.58:8000/scrape"; // replace with your server address
+    //final apiUrl = "http://127.0.0.1:8000/scrape";
+     print("Making POST request to $apiUrl with body: $url"); // <--- Debug
+
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl), 
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({"url": url}),
+      );
+      print("Response status: ${response.statusCode}");
+      print("Response body: ${response.body}");
+      if (response.statusCode == 200) {
+        // Parse the JSON response
+        final data = json.decode(response.body);
+        setState(() {
+          _recipeResult = json.encode(data, toEncodable: (obj) => obj.toString());
+        });
+        final ingredients = data["ingredients"]?.join("\n") ?? "No ingredients found";
+        final title = data["title"] ?? "Recipe";
+        Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => SearchDisplay(
+            title: title,
+            recipeResult: ingredients,
+          ),
+        ),
+      );
+
+        print("Recipe data: $_recipeResult");
+      } else {
+        setState(() {
+          _recipeResult = "Error: ${response.statusCode}";
+        });
+      }
+    } catch (e) {
+      print("Exception: $e"); // <--- Debug
+      setState(() {
+        _recipeResult = "An error occurred: $e";
+      });
+    }
+  }
+
   @override
   void dispose() {
+    _urlController.dispose();
     searchController.dispose();
     super.dispose();
   }
@@ -126,14 +186,18 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+                  
                   SizedBox(width: 10),
-                  Container(
-                    padding: EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Icon(Icons.filter_list),
+                   IconButton(
+                    icon: Icon(Icons.send, color: Colors.black),
+                    onPressed: () {
+                      print("Send button tapped");
+                      // Trigger API call when button is pressed
+                      final url = _urlController.text;
+                      if (url.isNotEmpty) {
+                        fetchRecipeData(url);
+                      }
+                    },
                   ),
                 ],
               ),
