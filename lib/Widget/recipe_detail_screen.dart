@@ -12,7 +12,6 @@ class RecipeDetailScreen extends StatefulWidget {
 }
 
 class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
-  final String apiKey = '1c266f8a0eb84f7d8888e73fc2141053';
   Map<String, dynamic>? recipeDetails;
   bool isLoading = true;
 
@@ -24,15 +23,21 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
 
   Future<void> fetchRecipeDetails() async {
     final url = Uri.parse(
-        'https://api.spoonacular.com/recipes/${widget.recipeId}/information?apiKey=$apiKey');
+        'https://www.themealdb.com/api/json/v1/1/lookup.php?i=${widget.recipeId}');
 
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
-        setState(() {
-          recipeDetails = json.decode(response.body);
-          isLoading = false;
-        });
+        final data = json.decode(response.body);
+        final List<dynamic> meals = data['meals'];
+        if (meals != null && meals.isNotEmpty) {
+          setState(() {
+            recipeDetails = meals[0];
+            isLoading = false;
+          });
+        } else {
+          throw Exception('No recipe details found');
+        }
       } else {
         throw Exception('Failed to load recipe details');
       }
@@ -48,8 +53,8 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(recipeDetails?['title'] ?? 'Recipe Details'),
-        backgroundColor: Colors.green,
+        title: Text(recipeDetails?['strMeal'] ?? 'Recipe Details'),
+        backgroundColor: Color(0xff9E9E9E),
       ),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
@@ -59,56 +64,35 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Recipe Image
                       ClipRRect(
                         borderRadius:
                             BorderRadius.vertical(bottom: Radius.circular(20)),
                         child: Image.network(
-                          recipeDetails!['image'] ??
+                          recipeDetails!['strMealThumb'] ??
                               'https://via.placeholder.com/400',
                           width: double.infinity,
                           height: 250,
                           fit: BoxFit.cover,
                         ),
                       ),
-
                       Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Recipe Title
                             Text(
-                              recipeDetails!['title'] ?? 'No Title',
+                              recipeDetails!['strMeal'] ?? 'No Title',
                               style: TextStyle(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             SizedBox(height: 10),
-
-                            // Cooking Info (Time & Servings)
-                            Row(
-                              children: [
-                                Icon(Icons.access_time, color: Colors.green),
-                                SizedBox(width: 5),
-                                Text(
-                                  "${recipeDetails!['readyInMinutes']} min",
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                                SizedBox(width: 20),
-                                Icon(Icons.restaurant, color: Colors.green),
-                                SizedBox(width: 5),
-                                Text(
-                                  "${recipeDetails!['servings']} servings",
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              ],
+                            Text(
+                              "Category: ${recipeDetails!['strCategory']}",
+                              style: TextStyle(fontSize: 16),
                             ),
-
                             SizedBox(height: 20),
-
-                            // Ingredients Section
                             Text(
                               "Ingredients",
                               style: TextStyle(
@@ -116,39 +100,36 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                             ),
                             Divider(color: Colors.green),
                             SizedBox(height: 10),
-
-                            // List of Ingredients
                             ListView.builder(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
-                              itemCount:
-                                  recipeDetails!['extendedIngredients'].length,
+                              itemCount: 20,
                               itemBuilder: (context, index) {
                                 final ingredient =
-                                    recipeDetails!['extendedIngredients']
-                                        [index];
-                                return ListTile(
-                                  leading: Icon(Icons.check_circle,
-                                      color: Colors.green),
-                                  title: Text(ingredient['original']),
-                                );
+                                    recipeDetails!['strIngredient${index + 1}'];
+                                final measure =
+                                    recipeDetails!['strMeasure${index + 1}'];
+                                if (ingredient != null &&
+                                    ingredient.isNotEmpty) {
+                                  return ListTile(
+                                    leading: Icon(Icons.check_circle,
+                                        color: Color(0xff9E9E9E)),
+                                    title: Text("$measure $ingredient"),
+                                  );
+                                }
+                                return SizedBox.shrink();
                               },
                             ),
-
                             SizedBox(height: 20),
-
-                            // Instructions Section
                             Text(
                               "Instructions",
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
-                            Divider(color: Colors.green),
+                            Divider(color: Color(0xff9E9E9E)),
                             SizedBox(height: 10),
-
-                            // Recipe Instructions
                             Text(
-                              recipeDetails!['instructions'] ??
+                              recipeDetails!['strInstructions'] ??
                                   'No instructions available',
                               style: TextStyle(fontSize: 16, height: 1.5),
                             ),
