@@ -97,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Function to send the POST request to your backend API
   Future<void> fetchRecipeData(String url) async {
-    final apiUrl = "http://192.168.164.58:8000/scrape"; // replace with your server address
+    final apiUrl = "http://192.168.96.58:8000/scrape"; // replace with your server address
     //final apiUrl = "http://127.0.0.1:8000/scrape";
      print("Making POST request to $apiUrl with body: $url"); // <--- Debug
 
@@ -112,11 +112,12 @@ class _HomeScreenState extends State<HomeScreen> {
       print("Response body: ${response.body}");
       if (response.statusCode == 200) {
         // Parse the JSON response
+        
         final data = json.decode(response.body);
         setState(() {
           _recipeResult = json.encode(data, toEncodable: (obj) => obj.toString());
         });
-        final ingredients = data["ingredients"]?.join("\n") ?? "No ingredients found";
+         final ingredients = data["ingredients"]?.join("\n") ?? "No ingredients found";
         final title = data["title"] ?? "Recipe";
         Navigator.push(
         context,
@@ -127,7 +128,6 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       );
-
         print("Recipe data: $_recipeResult");
       } else {
         setState(() {

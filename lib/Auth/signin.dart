@@ -292,7 +292,7 @@ class _SignInState extends State<SignIn> with ChangeNotifier {
             Text("Don't have an account?"),
             TextButton(
               onPressed: (){
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>RegisterPage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context)=>AuthPage()));
               },
                 child: Text("Sign Up")
             )

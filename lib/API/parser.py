@@ -3,8 +3,140 @@ from flask import Flask, request, jsonify
 import requests
 from bs4 import BeautifulSoup
 import re
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+import spacy
 
-app = Flask(__name__)
+
+
+class NLPIngredientProcessor:
+    def __init__(self):
+        # Download required NLTK resources (one-time setup)
+        try:
+            nltk.data.find('tokenizers/punkt')
+        except LookupError:
+            nltk.download('punkt')
+            
+        try:
+            nltk.data.find('corpora/stopwords')
+        except LookupError:
+            nltk.download('stopwords')
+            
+        # Load spaCy model for more advanced NLP (uncomment if using spaCy)
+        self.nlp = spacy.load("en_core_web_sm")
+        
+        # Common ingredients and their standard forms
+        self.ingredients_dict = {
+            # Basic baking ingredients
+            "flour": ["all-purpose flour", "bread flour", "cake flour", "pastry flour", "wheat flour", "all purpose flour"],
+            "sugar": ["granulated sugar", "white sugar", "caster sugar", "table sugar"],
+            "brown sugar": ["light brown sugar", "dark brown sugar", "demerara sugar"],
+            "powdered sugar": ["confectioners sugar", "icing sugar", "confectioners' sugar"],
+            "butter": ["unsalted butter", "salted butter", "margarine", "butter substitute"],
+            "eggs": ["egg", "egg whites", "egg yolks", "large eggs", "medium eggs"],
+            "milk": ["whole milk", "skim milk", "dairy milk", "almond milk", "soy milk", "oat milk"],
+            "oil": ["vegetable oil", "canola oil", "olive oil", "coconut oil", "sunflower oil"],
+            "vanilla": ["vanilla extract", "vanilla essence", "vanilla flavoring", "vanillin"],
+            "salt": ["table salt", "sea salt", "kosher salt", "himalayan salt"],
+            "baking powder": ["double-acting baking powder"],
+            "baking soda": ["bicarbonate of soda", "sodium bicarbonate", "bicarb soda"],
+            "cocoa powder": ["unsweetened cocoa", "dutch process cocoa", "cacao powder"],
+            "chocolate": ["chocolate chips", "chocolate chunks", "dark chocolate", "milk chocolate", "white chocolate", "semi-sweet chocolate"],
+            "nuts": ["walnuts", "almonds", "pecans", "hazelnuts", "peanuts", "cashews", "pistachios"],
+            "honey": ["raw honey", "clover honey", "pure honey"],
+            "maple syrup": ["pure maple syrup", "maple extract", "maple flavoring"],
+            "cinnamon": ["ground cinnamon", "cinnamon powder", "cinnamon sticks"],
+            "oats": ["rolled oats", "quick oats", "old-fashioned oats", "instant oats"]
+        }
+        
+        self.stop_words = set(stopwords.words('english'))
+        
+    def preprocess_text(self, text):
+        """Clean and tokenize ingredient text."""
+        # Convert to lowercase
+        text = text.lower()
+        
+        # Remove punctuation except for / in fractions
+        text = re.sub(r'[^\w\s/]', '', text)
+        
+        # Tokenize
+        tokens = word_tokenize(text)
+        
+        # Remove stop words (except 'of' which is important for ingredients)
+        filtered_tokens = [w for w in tokens if w not in self.stop_words or w == 'of']
+        
+        return filtered_tokens
+        
+    def identify_ingredient(self, ingredient_text):
+        """Use NLP techniques to identify the main ingredient."""
+        # Preprocess the text
+        tokens = self.preprocess_text(ingredient_text)
+        
+        # First, check for direct matches in our ingredients dictionary
+        for standard_name, variations in self.ingredients_dict.items():
+            # Check if standard name appears in tokens
+            if standard_name in tokens or any(variation in ingredient_text.lower() for variation in variations):
+                return standard_name
+                
+        # If no direct match, try to find the main ingredient by removing measuring words
+        measuring_words = ["cup", "cups", "tablespoon", "tablespoons", "tbsp", "teaspoon", 
+                           "teaspoons", "tsp", "gram", "grams", "g", "ounce", "ounces", "oz"]
+        content_tokens = [token for token in tokens if token not in measuring_words]
+        
+        # The main ingredient is often the first non-measurement word
+        # OR it follows "of" as in "2 cups of flour"
+        main_ingredient = None
+        
+        # Check for "of" pattern (e.g., "2 cups of flour")
+        if "of" in content_tokens:
+            of_index = content_tokens.index("of")
+            if of_index < len(content_tokens) - 1:
+                main_ingredient = content_tokens[of_index + 1]
+        # If no "of" pattern, take the first token that's not a number
+        else:
+            for token in content_tokens:
+                if not token.replace('.', '', 1).isdigit():  # Skip numbers
+                    main_ingredient = token
+                    break
+        
+        # If we identified a main ingredient, check for matches
+        if main_ingredient:
+            for standard_name, variations in self.ingredients_dict.items():
+                if main_ingredient in variations or main_ingredient == standard_name:
+                    return standard_name
+                    
+            # If it's not in our variations but seems to be a valid ingredient, return it
+            return main_ingredient
+            
+        # If all else fails
+        return None
+    
+    # Using spaCy for more advanced NLP (optional)
+    def identify_ingredient_with_spacy(self, ingredient_text):
+        """Use spaCy for ingredient identification."""
+        # Make sure you've installed spaCy and downloaded a model:
+        # pip install spacy
+        # python -m spacy download en_core_web_sm
+        
+        doc = self.nlp(ingredient_text.lower())
+        
+        # Extract nouns which are likely to be ingredients
+        nouns = [token.text for token in doc if token.pos_ == "NOUN"]
+        
+        # Check nouns against our ingredient dictionary
+        for noun in nouns:
+            for standard_name, variations in self.ingredients_dict.items():
+                if noun == standard_name or any(noun in var for var in variations):
+                    return standard_name
+        
+        # If no match but we found nouns, return the first one
+        if nouns:
+            return nouns[0]
+            
+        return None
+
+
 
 class BakingRecipeScraper:
     def __init__(self, url):
@@ -12,6 +144,7 @@ class BakingRecipeScraper:
         self.soup = None
         self.base_url = "/".join(url.split("/")[:3])
         self.max_pages = 3  # Prevent infinite loops
+        self.nlp_processor = NLPIngredientProcessor()
 
     def fetch_page(self):
         """Fetches the webpage content for a given URL."""
@@ -63,7 +196,6 @@ class BakingRecipeScraper:
                         ingredients.append(li.get_text(separator=" ", strip=True))
         return ingredients if ingredients else ["Ingredients not found"]
     
-    from fractions import Fraction
 
     def parse_ingredient(self, text):
         """Parse ingredient text into structured data, handling fractions and units."""
@@ -111,6 +243,13 @@ class BakingRecipeScraper:
 
         # Clean ingredient name (remove symbols like *)
         ingredient = re.sub(r"[^\w\s-]", "", ingredient).strip()
+       
+        # Add NLP standardization
+        standardized_ingredient = self.nlp_processor.identify_ingredient(ingredient)
+        if standardized_ingredient:
+            final_ingredient = standardized_ingredient
+        else:
+            final_ingredient = ingredient
 
         return {
             "quantity": quantity,
@@ -145,19 +284,28 @@ class BakingRecipeScraper:
         """Runs the complete scraping process and returns structured recipe data."""
         self.fetch_page()
         title = self.extract_title()
-        ingredients = self.extract_ingredients()
+        raw_ingredients = self.extract_ingredients()
         instructions = self.extract_instructions()
+
+        # Parse each ingredient
+        parsed_ingredients = []
+        for ingredient_text in raw_ingredients:
+            parsed = self.parse_ingredient(ingredient_text)
+            parsed_ingredients.append(parsed)
 
         
     
-        if self.is_baking_recipe(ingredients, instructions):
+        if self.is_baking_recipe(raw_ingredients, instructions):
             return {
                 "title": title,
-                "ingredients": ingredients,
+                "ingredients": parsed_ingredients,
                 "instructions": instructions
             }
         else:
             return {"error": "Not a baking recipe."}
+
+
+app = Flask(__name__)
 
 @app.route('/scrape', methods=['POST'])
 def scrape_endpoint():
@@ -176,11 +324,3 @@ def scrape_endpoint():
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
 
-
-
-
-
-
-
-
-    

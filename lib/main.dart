@@ -15,10 +15,11 @@ Future<void> main() async {
   );
   runApp(MaterialApp(
       //home: Splash()
-      home: Home(),
+      //home: RecipeApp(),
+      //home: Home(),
+        home: MyApp(),
   ));
 }
-
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -29,8 +30,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
 
-  final tabs=[
-    RecipeApp(),
+  // Add your screens here
+  final List<Widget> tabs = [
+    Home(),       // First tab - Home Screen
+    Profile(),    // Second tab - Profile Screen
   ];
 
   @override
@@ -38,23 +41,24 @@ class _MyAppState extends State<MyApp> {
     print("Tabs length: ${tabs.length}");
     return MaterialApp(
       home: Scaffold(
-        body: tabs[_currentIndex],
-
+        body: IndexedStack(
+          index: _currentIndex,
+          children: tabs,
+        ),
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _currentIndex,
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
           fixedColor: Colors.black,
-
-          items: [
+          items: const [
             BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: "Home"
+              icon: Icon(Icons.home),
+              label: "Home",
             ),
             BottomNavigationBarItem(
-                icon: Icon(Icons.person),
-                label: "Profile"
-            )
+              icon: Icon(Icons.person),
+              label: "Profile",
+            ),
           ],
           onTap: (index) {
             setState(() {
@@ -66,4 +70,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-

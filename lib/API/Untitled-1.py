@@ -1,63 +1,185 @@
-
-from flask import Flask, request, jsonify
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
 import requests
-import re
 from bs4 import BeautifulSoup
+import re
 from fractions import Fraction
+import nltk
+from nltk.tokenize import word_tokenize
+from nltk.corpus import stopwords
+import spacy
 
-app = Flask(__name__)
+app = FastAPI()
 
-class RobustBakingScraper:
-    def __init__(self, url):
+
+# ✅ Define a request model
+class ScrapeRequest(BaseModel):
+    url: str
+
+class NLPIngredientProcessor:
+    def __init__(self):
+        # Download required NLTK resources (one-time setup)
+        try:
+            nltk.data.find('tokenizers/punkt')
+            nltk.data.find('tokenizers/punkt_tab')
+        except LookupError:
+            nltk.download('punkt')
+            nltk.download('punkt_tab')
+            
+        try:
+            nltk.data.find('corpora/stopwords')
+        except LookupError:
+            nltk.download('stopwords')
+            
+        # Load spaCy model for more advanced NLP (uncomment if using spaCy)
+        # spaCy setup
+        try:
+            self.nlp = spacy.load("en_core_web_sm")
+        except OSError:
+            spacy.cli.download("en_core_web_sm")
+            self.nlp = spacy.load("en_core_web_sm")
+        
+        # Common ingredients and their standard forms
+        self.ingredients_dict = {
+            # Basic baking ingredients
+            "flour": ["all-purpose flour", "bread flour", "cake flour", "pastry flour", "wheat flour", "all purpose flour"],
+            "sugar": ["granulated sugar", "white sugar", "caster sugar", "table sugar"],
+            "brown sugar": ["light brown sugar", "dark brown sugar", "demerara sugar"],
+            "powdered sugar": ["confectioners sugar", "icing sugar", "confectioners' sugar"],
+            "butter": ["unsalted butter", "salted butter", "margarine", "butter substitute"],
+            "eggs": ["egg", "egg whites", "egg yolks", "large eggs", "medium eggs"],
+            "milk": ["whole milk", "skim milk", "dairy milk", "almond milk", "soy milk", "oat milk"],
+            "oil": ["vegetable oil", "canola oil", "olive oil", "coconut oil", "sunflower oil"],
+            "vanilla": ["vanilla extract", "vanilla essence", "vanilla flavoring", "vanillin"],
+            "salt": ["table salt", "sea salt", "kosher salt", "himalayan salt"],
+            "baking powder": ["double-acting baking powder"],
+            "baking soda": ["bicarbonate of soda", "sodium bicarbonate", "bicarb soda"],
+            "cocoa powder": ["unsweetened cocoa", "dutch process cocoa", "cacao powder"],
+            "chocolate": ["chocolate chips", "chocolate chunks", "dark chocolate", "milk chocolate", "white chocolate", "semi-sweet chocolate"],
+            "nuts": ["walnuts", "almonds", "pecans", "hazelnuts", "peanuts", "cashews", "pistachios"],
+            "honey": ["raw honey", "clover honey", "pure honey"],
+            "maple syrup": ["pure maple syrup", "maple extract", "maple flavoring"],
+            "cinnamon": ["ground cinnamon", "cinnamon powder", "cinnamon sticks"],
+            "oats": ["rolled oats", "quick oats", "old-fashioned oats", "instant oats"]
+        }
+        
+        self.stop_words = set(stopwords.words('english'))
+        
+    def preprocess_text(self, text):
+        """Clean and tokenize ingredient text."""
+        # Convert to lowercase
+        text = text.lower()
+        
+        # Remove punctuation except for / in fractions
+        text = re.sub(r'[^\w\s/]', '', text)
+        
+        # Tokenize
+        tokens = word_tokenize(text)
+        
+        # Remove stop words (except 'of' which is important for ingredients)
+        filtered_tokens = [w for w in tokens if w not in self.stop_words or w == 'of']
+        
+        return filtered_tokens
+        
+    def identify_ingredient(self, ingredient_text):
+        """Use NLP techniques to identify the main ingredient."""
+        # Preprocess the text
+        tokens = self.preprocess_text(ingredient_text)
+        
+        # First, check for direct matches in our ingredients dictionary
+        for standard_name, variations in self.ingredients_dict.items():
+            # Check if standard name appears in tokens
+            if standard_name in tokens or any(variation in ingredient_text.lower() for variation in variations):
+                return standard_name
+                
+        # If no direct match, try to find the main ingredient by removing measuring words
+        measuring_words = ["cup", "cups", "tablespoon", "tablespoons", "tbsp", "teaspoon", 
+                           "teaspoons", "tsp", "gram", "grams", "g", "ounce", "ounces", "oz"]
+        content_tokens = [token for token in tokens if token not in measuring_words]
+        
+        # The main ingredient is often the first non-measurement word
+        # OR it follows "of" as in "2 cups of flour"
+        main_ingredient = None
+        
+        # Check for "of" pattern (e.g., "2 cups of flour")
+        if "of" in content_tokens:
+            of_index = content_tokens.index("of")
+            if of_index < len(content_tokens) - 1:
+                main_ingredient = content_tokens[of_index + 1]
+        # If no "of" pattern, take the first token that's not a number
+        else:
+            for token in content_tokens:
+                if not token.replace('.', '', 1).isdigit():  # Skip numbers
+                    main_ingredient = token
+                    break
+        
+        # If we identified a main ingredient, check for matches
+        if main_ingredient:
+            for standard_name, variations in self.ingredients_dict.items():
+                if main_ingredient in variations or main_ingredient == standard_name:
+                    return standard_name
+                    
+            # If it's not in our variations but seems to be a valid ingredient, return it
+            return main_ingredient
+            
+        # If all else fails
+        return None
+    
+    # Using spaCy for more advanced NLP (optional)
+    def identify_ingredient_with_spacy(self, ingredient_text):
+        """Use spaCy for ingredient identification."""
+        # Make sure you've installed spaCy and downloaded a model:
+        # pip install spacy
+        # python -m spacy download en_core_web_sm
+        
+        doc = self.nlp(ingredient_text.lower())
+        
+        # Extract nouns which are likely to be ingredients
+        nouns = [token.text for token in doc if token.pos_ == "NOUN"]
+        
+        # Check nouns against our ingredient dictionary
+        for noun in nouns:
+            for standard_name, variations in self.ingredients_dict.items():
+                if noun == standard_name or any(noun in var for var in variations):
+                    return standard_name
+        
+        # If no match but we found nouns, return the first one
+        if nouns:
+            return nouns[0]
+            
+        return None
+
+
+# ✅ Fix the class initialization issue
+class BakingRecipeScraper:
+    def __init__(self, url: str):
         self.url = url
         self.soup = None
         self.base_url = "/".join(url.split("/")[:3])
         self.max_pages = 3  # Prevent infinite loops
-
-    def fetch_page(self, url):
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
-        }
-        try:
-            response = requests.get(url, headers=headers, timeout=10)
-            response.raise_for_status()
-            return BeautifulSoup(response.text, "html.parser")
-        except Exception as e:
-            raise Exception(f"Failed to fetch page: {str(e)}")
+        self.nlp_processor = NLPIngredientProcessor()
+    
+    def fetch_page(self):
+        headers = {"User-Agent": "Mozilla/5.0"}
+        response = requests.get(self.url, headers=headers)
+        response.encoding = 'utf-8'
+        if response.status_code == 200:
+            self.soup = BeautifulSoup(response.text, "html.parser")
+        else:
+            raise Exception("Failed to fetch page")
 
     def extract_title(self):
         title_tag = self.soup.find("h1") or self.soup.find("title")
-        return title_tag.text.strip() if title_tag else "Untitled Recipe"
+        return title_tag.text.strip() if title_tag else "No title found"
 
-    # def extract_ingredients(self):
-    #     ingredients = []
-    #     # Case 1: Directly target common ingredient classes (e.g., loveandlemons.com)
-    #     ingredient_tags = self.soup.find_all(class_=re.compile(r"wprm-recipe-ingredient|ingredient", re.IGNORECASE))
-    #     # Case 2: Fallback to semantic HTML
-    #     if not ingredient_tags:
-    #         heading = self.soup.find(lambda tag: tag.name in ["h2", "h3"] and "ingredient" in tag.text.lower())
-    #         if heading:
-    #             list_tags = heading.find_next(["ul", "ol"])
-    #             ingredient_tags = list_tags.find_all("li") if list_tags else []
-    #     # Case 3: Manual override for specific sites
-    #     if "loveandlemons.com" in self.url:
-    #         ingredient_tags = self.soup.select("li.wprm-recipe-ingredient")
-    #     for tag in ingredient_tags:
-    #         text = tag.get_text(separator=" ", strip=True)
-    #         ingredients.append(text)
-    #     return ingredients if ingredients else ["Ingredients not found"]
-    
     def extract_ingredients(self):
-        """Extracts ingredients from the page using common HTML patterns."""
         ingredients = []
-        # Primary method: Look for tags that include 'ingredient' in their class name.
-        ingredient_tags = self.soup.find_all(["li", "span", "p"], 
-                                            class_=lambda x: x and "ingredient" in x.lower())
+        ingredient_tags = self.soup.find_all(["li", "span", "p"], class_=lambda x: x and "ingredient" in x.lower())
+
         if ingredient_tags:
             for tag in ingredient_tags:
                 ingredients.append(tag.get_text(separator=" ", strip=True))
-        
-        # Fallback: Use semantic HTML if the above method returns nothing.
+
         if not ingredients or ingredients == ["Ingredients not found"]:
             # Look for a heading (h2 or h3) containing "ingredient" in its text.
             heading = self.soup.find(lambda tag: tag.name in ["h2", "h3"] and "ingredient" in tag.get_text().lower())
@@ -69,24 +191,6 @@ class RobustBakingScraper:
                     for li in li_tags:
                         ingredients.append(li.get_text(separator=" ", strip=True))
         return ingredients if ingredients else ["Ingredients not found"]
-                                                
-    # def parse_ingredient(self, text):
-    #     # Simplified regex for common patterns (e.g., "1 cup sugar" or "200g flour")
-    #     pattern = r"""
-    #         (^\d+\.?\d*)\s*     # Quantity
-    #         (tsp|tbsp|cup|g|kg|ml|oz|lb)?\s*  # Unit
-    #         (.+)                # Ingredient name
-    #     """.strip()
-    #     match = re.match(pattern, text, re.IGNORECASE | re.VERBOSE)
-    #     if match:
-    #         return {
-    #             "quantity": float(match.group(1)),
-    #             "unit": (match.group(2) or "unit").lower(),
-    #             "ingredient": match.group(3).strip()
-    #         }
-    #     return {"text": text, "error": "Could not parse"}
-    
-    from fractions import Fraction
 
     def parse_ingredient(self, text):
         """Parse ingredient text into structured data, handling fractions and units."""
@@ -99,11 +203,10 @@ class RobustBakingScraper:
                 \d+\s+\d+\s*/\s*\d+                   # Mixed numbers like "1 1/2"
             )\s*
             (?P<unit>                                 # Units (e.g., cup, g)
-                tsp|tbsp|teaspoon|tablespoon|
-                cups?|grams?|g|kilograms?|kg|
-                milliliters?|ml|ounces?|oz|lbs?|       # Allow plural/singular
-                pinch|dash|pound|lb|quarts?|pints?|gallons?|
-                liters?|bunch|bottle|can|container|package
+                tsp|tbsp|teaspoons?|tablespoons?|  # Explicit plurals
+                cups?|grams?|g|kg|ml|oz|lbs?|      
+                pinch(es)?|dash(es)?|pound|lb|     
+                quarts?|pints?|gallons?|liters?|bunch|bottle|can|container|package
             )?\s*                                     # Unit is optional
             (?P<ingredient>                           # Ingredient name and notes
                 .*?                                   # Non-greedy match
@@ -135,22 +238,35 @@ class RobustBakingScraper:
         # Clean ingredient name (remove symbols like *)
         ingredient = re.sub(r"[^\w\s-]", "", ingredient).strip()
 
+        
+       
+        # Add NLP standardization
+        standardized_ingredient = self.nlp_processor.identify_ingredient(ingredient)
+        if standardized_ingredient:
+            final_ingredient = standardized_ingredient
+        else:
+            final_ingredient = ingredient
+
         return {
             "quantity": quantity,
             "unit": unit,
-            "ingredient": ingredient
-        }
-    
-    #To fetch the instructions from the page
+            "ingredient": final_ingredient
+        }    
+
+
+
     def extract_instructions(self):
-        """Extracts instructions from the page using common HTML patterns."""
         instructions = []
-        # Looking for tags that include 'instruction' in their class name.
         step_tags = self.soup.find_all(["li", "p"], class_=lambda x: x and "instruction" in x.lower())
         if step_tags:
             for tag in step_tags:
                 instructions.append(tag.text.strip())
         return instructions if instructions else ["Instructions not found"]
+
+    def is_baking_recipe(self, ingredients, instructions):
+        baking_keywords = ["bake", "oven", "flour", "sugar", "butter", "yeast"]
+        combined_text = " ".join(ingredients + instructions).lower()
+        return any(keyword in combined_text for keyword in baking_keywords)
 
     def find_next_page(self):
         next_link = self.soup.find("a", string=re.compile(r"next|more|→", re.IGNORECASE))
@@ -158,39 +274,45 @@ class RobustBakingScraper:
             next_url = next_link["href"]
             return next_url if next_url.startswith("http") else f"{self.base_url}{next_url}"
         return None
-
+    
     def scrape_recipe(self):
-        try:
-            self.soup = self.fetch_page(self.url)
-            title = self.extract_title()
-            ingredients = []
-            page_count = 0
+        self.fetch_page()
+        title = self.extract_title()
+        raw_ingredients = self.extract_ingredients()
+        instructions = self.extract_instructions()
 
-            while self.soup and page_count < self.max_pages:
-                ingredients.extend(self.extract_ingredients())
-                next_page_url = self.find_next_page()
-                if not next_page_url:
-                    break
-                self.soup = self.fetch_page(next_page_url)
-                page_count += 1
+        # Parse each ingredient
+        parsed_ingredients = []
+        for ingredient_text in raw_ingredients:
+            parsed = self.parse_ingredient(ingredient_text)
+            parsed_ingredients.append(parsed)
 
-            parsed_ingredients = [self.parse_ingredient(ing) for ing in ingredients]
-            return {"title": title, "ingredients": parsed_ingredients, "url": self.url}
-        except Exception as e:
-            return {"error": str(e)}
+        if self.is_baking_recipe(raw_ingredients, instructions):
+            return {
+                "title": title,
+                "ingredients": parsed_ingredients,
+                "instructions": instructions,
+                "url": self.url
+            }
+        else:
+            return {"error": "Not a baking recipe."}
 
-@app.route('/scrape', methods=['POST'])
-def scrape_endpoint():
-    data = request.get_json()
-    url = data.get("url")
-    if not url:
-        return jsonify({"error": "URL is required"}), 400
+# ✅ POST request (Accepts JSON body)
+@app.post("/scrape")
+async def scrape_recipe(request: ScrapeRequest):
     try:
-        scraper = RobustBakingScraper(url)
+        scraper = BakingRecipeScraper(request.url)
         result = scraper.scrape_recipe()
-        return jsonify(result)
+        return result
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        raise HTTPException(status_code=500, detail=str(e))
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8081)
+# ✅ GET request (Accepts URL as query parameter)
+@app.get("/scrape")
+async def scrape_recipe_get(url: str):
+    try:
+        scraper = BakingRecipeScraper(url)
+        result = scraper.scrape_recipe()
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
