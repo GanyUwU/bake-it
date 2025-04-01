@@ -4,9 +4,6 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from fractions import Fraction
-import nltk
-from nltk.tokenize import word_tokenize
-from nltk.corpus import stopwords
 import spacy
 from spacy.matcher import Matcher
 import json

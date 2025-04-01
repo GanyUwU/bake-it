@@ -1,9 +1,12 @@
 import 'dart:convert';
+import 'package:a1/API/gemini.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'recipe_detail_screen.dart';
 
 class RecipeScreen extends StatefulWidget {
+  const RecipeScreen({super.key});
+
   @override
   _RecipeScreenState createState() => _RecipeScreenState();
 }
@@ -15,6 +18,44 @@ class _RecipeScreenState extends State<RecipeScreen> {
   bool isLoadingMore = false;
   Set<int> likedRecipes = {}; // Store liked recipe IDs
 
+  // Controller for the search bar (for Gemini)
+  final TextEditingController _searchController = TextEditingController();
+
+  // Function to call Gemini API using the external function and display the result
+  void _searchGeminiRecipe() async {
+    String query = _searchController.text.trim();
+    if (query.isEmpty) return;
+
+    // Optionally show a loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    String recipeDetail = await fetchRecipeFromGemini(query);
+
+    // Close the loading dialog
+    Navigator.of(context).pop();
+
+    // Show the detailed recipe in a dialog or navigate to another screen
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Detailed Recipe for $query"),
+        content: SingleChildScrollView(
+          child: Text(recipeDetail),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Close"),
+          )
+        ],
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -22,6 +63,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
   }
 
   Future<void> fetchRecipes() async {
+    
     final url = Uri.parse(
         'https://api.spoonacular.com/recipes/random?apiKey=$apiKey&number=$recipeCount');
 
@@ -72,6 +114,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
         title: Text("Recipes"),
@@ -83,6 +126,32 @@ class _RecipeScreenState extends State<RecipeScreen> {
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 children: [
+                  Row(
+                    children: [
+                      TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          hintText: 'Search for recipes...',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(color: Colors.grey),
+                          ),
+                          suffixIcon: Icon(Icons.search),
+                        ),
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Spacer(),
+                      IconButton(
+                        icon: Icon(Icons.send),
+                        onPressed: () {
+                          _searchGeminiRecipe();
+                        },
+                      ),
+                    ],
+                  ),
                   Expanded(
                     child: GridView.builder(
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
