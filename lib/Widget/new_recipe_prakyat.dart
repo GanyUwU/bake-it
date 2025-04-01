@@ -1,105 +1,78 @@
 import 'dart:convert';
-import 'package:a1/API/gemini.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'recipe_detail_screen.dart';
 
-class RecipeScreen extends StatefulWidget {
-  const RecipeScreen({super.key});
-
+class RecipeListScreen extends StatefulWidget {
   @override
-  _RecipeScreenState createState() => _RecipeScreenState();
+  _RecipeListScreenState createState() => _RecipeListScreenState();
 }
 
-class _RecipeScreenState extends State<RecipeScreen> {
-  final String apiKey = '1c266f8a0eb84f7d8888e73fc2141053';
+class _RecipeListScreenState extends State<RecipeListScreen> {
+  final TextEditingController searchController = TextEditingController();
   List<Map<String, dynamic>> recipes = [];
-  int recipeCount = 8;
-  bool isLoadingMore = false;
-  Set<int> likedRecipes = {}; // Store liked recipe IDs
-
-  // Controller for the search bar (for Gemini)
-  final TextEditingController _searchController = TextEditingController();
-
-  // Function to call Gemini API using the external function and display the result
-  void _searchGeminiRecipe() async {
-    String query = _searchController.text.trim();
-    if (query.isEmpty) return;
-
-    // Optionally show a loading indicator
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
-    );
-
-    String recipeDetail = await fetchRecipeFromGemini(query);
-
-    // Close the loading dialog
-    Navigator.of(context).pop();
-
-    // Show the detailed recipe in a dialog or navigate to another screen
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Detailed Recipe for $query"),
-        content: SingleChildScrollView(
-          child: Text(recipeDetail),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("Close"),
-          )
-        ],
-      ),
-    );
-  }
+  List<Map<String, dynamic>> filteredRecipes = [];
+  int displayedRecipes = 8;
+  bool isLoading = false;
+  Set<int> likedRecipes = {};
 
   @override
   void initState() {
     super.initState();
     fetchRecipes();
+    searchController.addListener(_onSearchChanged);
   }
 
-  Future<void> fetchRecipes() async {
-    
-    final url = Uri.parse(
-        'https://api.spoonacular.com/recipes/random?apiKey=$apiKey&number=$recipeCount');
+  Future<void> fetchRecipes({String? query}) async {
+    setState(() {
+      isLoading = true;
+    });
+
+    final url = query == null || query.isEmpty
+        ? Uri.parse(
+            'https://www.themealdb.com/api/json/v1/1/filter.php?c=Dessert')
+        : Uri.parse(
+            'https://www.themealdb.com/api/json/v1/1/search.php?s=$query');
 
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        List recipeList = data['recipes'];
+        final List<dynamic>? fetchedRecipes = data['meals'];
 
         setState(() {
-          recipes.addAll(recipeList.map<Map<String, dynamic>>((recipe) {
-            return {
-              'id': recipe['id'],
-              'title': recipe['title'] ?? 'No Title',
-              'image': recipe['image'] ?? 'https://via.placeholder.com/150',
-            };
-          }).toList());
-          isLoadingMore = false;
+          if (fetchedRecipes != null) {
+            recipes = fetchedRecipes.map((recipe) {
+              return {
+                'id': int.parse(recipe['idMeal']),
+                'title': recipe['strMeal'],
+                'image': recipe['strMealThumb'],
+              };
+            }).toList();
+          } else {
+            recipes = [];
+          }
+          filteredRecipes = List.from(recipes);
         });
-      } else {
-        throw Exception('Failed to load recipes');
       }
     } catch (e) {
-      print('Error fetching recipes: $e');
+      print("Error fetching recipes: $e");
+    } finally {
       setState(() {
-        isLoadingMore = false;
+        isLoading = false;
       });
     }
   }
 
-  void loadMoreRecipes() {
+  void _onSearchChanged() {
+    String query = searchController.text.trim();
+    fetchRecipes(query: query);
+  }
+
+  void _loadMoreRecipes() {
     setState(() {
-      isLoadingMore = true;
-      recipeCount += 8;
+      displayedRecipes += 8;
     });
-    fetchRecipes();
   }
 
   void toggleLike(int recipeId) {
@@ -113,56 +86,54 @@ class _RecipeScreenState extends State<RecipeScreen> {
   }
 
   @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
-        title: Text("Recipes"),
-        backgroundColor: Colors.green,
+        title: Text("Baking Recipes"),
+        backgroundColor: Color(0xff9E9E9E),
       ),
-      body: recipes.isEmpty
-          ? Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                children: [
-                  Row(
-                    children: [
-                      TextField(
-                        controller: _searchController,
-                        decoration: InputDecoration(
-                          hintText: 'Search for recipes...',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey),
-                          ),
-                          suffixIcon: Icon(Icons.search),
-                        ),
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Spacer(),
-                      IconButton(
-                        icon: Icon(Icons.send),
-                        onPressed: () {
-                          _searchGeminiRecipe();
-                        },
-                      ),
-                    ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search Baking Recipes',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
                   ),
-                  Expanded(
-                    child: GridView.builder(
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
+              ),
+              SizedBox(height: 20),
+              isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : GridView.builder(
+                      shrinkWrap: true,
+                      physics: NeverScrollableScrollPhysics(),
                       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                         crossAxisCount: 2,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
-                        childAspectRatio: 0.75, // Adjusted to prevent overflow
+                        childAspectRatio: 0.75,
                       ),
-                      itemCount: recipes.length,
+                      itemCount: (displayedRecipes < filteredRecipes.length)
+                          ? displayedRecipes
+                          : filteredRecipes.length,
                       itemBuilder: (context, index) {
-                        final recipe = recipes[index];
+                        final recipe = filteredRecipes[index];
                         bool isLiked = likedRecipes.contains(recipe['id']);
                         return GestureDetector(
                           onTap: () {
@@ -179,18 +150,50 @@ class _RecipeScreenState extends State<RecipeScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.vertical(
-                                      top: Radius.circular(12)),
-                                  child: Image.network(
-                                    recipe['image'],
-                                    height:
-                                        120, // Fixed height to avoid overflow
-                                    width: double.infinity,
-                                    fit: BoxFit.cover,
-                                  ),
+                                Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(12),
+                                      child: Image.network(
+                                        recipe['image'],
+                                        height: 120,
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                    Positioned.fill(
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    RecipeDetailScreen(
+                                                        recipeId: recipe['id']),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      bottom: 8,
+                                      right: 8,
+                                      child: IconButton(
+                                        icon: Icon(
+                                          Icons.favorite,
+                                          color: isLiked
+                                              ? Colors.red
+                                              : Colors.grey,
+                                        ),
+                                        onPressed: () =>
+                                            toggleLike(recipe['id']),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
@@ -202,19 +205,7 @@ class _RecipeScreenState extends State<RecipeScreen> {
                                       fontWeight: FontWeight.bold,
                                     ),
                                     maxLines: 2,
-                                    overflow: TextOverflow
-                                        .ellipsis, // Prevents overflow
-                                  ),
-                                ),
-                                Spacer(), // Pushes like button to bottom
-                                Padding(
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: IconButton(
-                                    icon: Icon(
-                                      Icons.favorite,
-                                      color: isLiked ? Colors.red : Colors.grey,
-                                    ),
-                                    onPressed: () => toggleLike(recipe['id']),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
@@ -223,31 +214,20 @@ class _RecipeScreenState extends State<RecipeScreen> {
                         );
                       },
                     ),
+              if (displayedRecipes < filteredRecipes.length)
+                Center(
+                  child: TextButton(
+                    onPressed: _loadMoreRecipes,
+                    child: Text(
+                      'See More',
+                      style: TextStyle(fontSize: 16, color: Color(0xFF9E9E9E)),
+                    ),
                   ),
-                  if (!isLoadingMore)
-                    ElevatedButton(
-                      onPressed: loadMoreRecipes,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text(
-                        'See More',
-                        style: TextStyle(fontSize: 16, color: Colors.white),
-                      ),
-                    ),
-                  if (isLoadingMore)
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                ],
-              ),
-            ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
