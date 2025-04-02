@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 
+
 class RecipeDetailPage extends StatelessWidget {
   final String query;
   final List<Widget> formattedRecipe;
 
-  const RecipeDetailPage({Key? key, required this.query, required this.formattedRecipe}) : super(key: key);
+  const RecipeDetailPage({super.key, required this.query, required this.formattedRecipe});
 
   @override
   Widget build(BuildContext context) {
