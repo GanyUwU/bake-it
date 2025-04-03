@@ -8,6 +8,7 @@ from spacy.matcher import Matcher
 from fractions import Fraction
 import json
 
+app = FastAPI()
 
 class IngredientParser:
     def __init__(self):
@@ -540,6 +541,11 @@ class IngredientConverter:
 
 
 
+# ✅ Define a request model
+class ScrapeRequest(BaseModel):
+    url: str
+
+
 # ✅ Fix the class initialization issue
 class BakingRecipeScraper:
     def __init__(self, url: str):
@@ -733,3 +739,23 @@ class BakingRecipeScraper:
         else:
             return {"error": "Not a baking recipe."}
         
+       
+# ✅ POST request (Accepts JSON body)
+@app.post("/scrape")
+async def scrape_recipe(request: ScrapeRequest):
+    try:
+        scraper = BakingRecipeScraper(request.url)
+        result = scraper.scrape_recipe()
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# ✅ GET request (Accepts URL as query parameter)
+@app.get("/scrape")
+async def scrape_recipe_get(url: str):
+    try:
+        scraper = BakingRecipeScraper(url)
+        result = scraper.scrape_recipe()
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
