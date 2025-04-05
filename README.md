@@ -1,16 +1,44 @@
-# a1
+# Bake-it 
 
-A new Flutter project.
+Welcome to the Precise baking for bakers project! This repository contains an application, built using Daart and Python, respectively. The Application serves as a palce where users can convert baking recipes to precies measurements(grams). This is helpful as many website and recipes are in vague measurements. 
 
-## Getting Started
+## Table of Contents
 
-This project is a starting point for a Flutter application.
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Running the Project](#running-the-project)
+- [License](#license)
 
-A few resources to get you started if this is your first Flutter project:
+## Requirements
+- Dart (3.7.0)
+- Python (3.10 or later)
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Installation
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+1. Clone the repository:
+    ```bash
+   git clone https://github.com/GanyUwU/bake-it.git
+   cd bake-it
+   ```
+2. Navigate to the API directory and install the dependencies:
+
+## Running the Project
+
+1. Run the server while in API directory
+   ```bash
+   cd lib
+   cd API
+   uvicorn server:app --host 0.0.0.0 --port 8000  --reload
+   ```
+   This will start the Fast API server.
+   
+2.To start the app
+  ```bash
+  flutter run
+  ```
+  This will run the Flutter App. Run this in a new terminal.
+
+## License
+
+This project is licensed under the MIT License.
+
