@@ -4,8 +4,10 @@ import 'package:http/http.dart' as http;
 import 'recipe_detail_screen.dart';
 
 class RecipeListScreen extends StatefulWidget {
+  const RecipeListScreen({super.key});
+
   @override
-  _RecipeListScreenState createState() => _RecipeListScreenState();
+  State<RecipeListScreen> createState() => _RecipeListScreenState();
 }
 
 class _RecipeListScreenState extends State<RecipeListScreen> {

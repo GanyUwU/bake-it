@@ -1,13 +1,12 @@
-import 'package:a1/API/try.dart';
 import 'package:a1/Home/home.dart';
-import 'package:a1/Home/new_homepage.dart';
+import 'package:a1/Home/splash.dart';
 import 'package:a1/Widget/new_recipe_prakyat.dart';
-import 'package:a1/Widget/recipe_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'Home/profile.dart';
-import 'Home/splash.dart';
+
 import 'firebase_options.dart';
+// Theme data for the app based on the dark login screen
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,10 +14,10 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(MaterialApp(
-      //home: Splash()
+
+      home: Splash()
       //home: RecipeApp(),
       //home: Home(),
-        home: MyApp(),
   ));
 }
 class MyApp extends StatefulWidget {
@@ -34,8 +33,8 @@ class _MyAppState extends State<MyApp> {
   // Add your screens here
   final List<Widget> tabs = [
     Home(),
-    RecipeScreen(),       // First tab - Home Screen
-    Profile(),    // Second tab - Profile Screen
+    RecipeListScreen(),       // First tab - Home Screen
+    ProfileScreen(),    // Second tab - Profile Screen
   ];
 
   @override

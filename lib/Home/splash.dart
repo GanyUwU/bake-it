@@ -1,6 +1,6 @@
-import 'package:a1/Home/home.dart';
+import 'package:a1/Auth/auth.dart';
 import 'package:flutter/material.dart';
-import '../Auth/signin.dart';
+
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -106,7 +106,7 @@ class _SplashState extends State<Splash> {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context)=>SignIn()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Auth()));
                         //Navigator.push(context, MaterialPageRoute(builder: (context)=>Home()));
                       },  
                       child: const Text(
