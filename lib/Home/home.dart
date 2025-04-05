@@ -1,5 +1,8 @@
 import 'package:a1/API/gemini.dart';
+import 'package:a1/Home/recipe.dart';
 import 'package:a1/Home/search_display.dart';
+import 'package:a1/Home/trial_s.dart';
+import 'package:a1/Widget/gemini_display.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -74,18 +77,19 @@ class _HomeState extends State<Home> {
     final apiUrl = "http://10.0.2.2:8000/scrape";
      print("Making POST request to $apiUrl with body: $url"); // <--- Debug
 
-
     try {
       final response = await http.post(
-        Uri.parse(apiUrl), 
+        Uri.parse(apiUrl),
         headers: {"Content-Type": "application/json"},
         body: json.encode({"url": url}),
       );
+
       print("Response status: ${response.statusCode}");
       print("Response body: ${response.body}");
+
       if (response.statusCode == 200) {
         // Parse the JSON response
-        
+
         final data = json.decode(response.body);
         setState(() {
           _recipeResult = json.encode(data, toEncodable: (obj) => obj.toString());
@@ -94,18 +98,25 @@ class _HomeState extends State<Home> {
         final title = data["title"] ?? "Recipe";
 
         // In fetchRecipeData()
+        // final parsedIngredients = (data['ingredients'] as List)
+        //     .map((item) => "${item['quantity']} ${item['unit']} ${item['ingredients']}")
+        //     .join("\n");
+        // print("Parsed ingredients: $parsedIngredients"); // <--- Debug
+
+        // Inside fetchRecipeData()
         final parsedIngredients = (data['ingredients'] as List)
-            .map((item) => "${item['quantity']} ${item['unit']} ${item['ingredient']}")
+            .map((item) {
+              final grams = item['grams']?.toStringAsFixed(1); // Round to 1 decimal
+              return "${item['quantity']} ${item['unit']} ${item['ingredient']}${grams != null ? ' ($grams g)' : ''}";
+            })
             .join("\n");
         print("Parsed ingredients: $parsedIngredients"); // <--- Debug
 
+        final recipe = Recipe.fromApiData(data);
         Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => SearchDisplay(
-            title: title,
-            recipeResult: parsedIngredients,
-          ),
+          builder: (context) => RecipeDetailView(recipe: recipe,)
         ),
       );
         print("Recipe data: $_recipeResult");
@@ -121,7 +132,7 @@ class _HomeState extends State<Home> {
       });
     }
   }
-  
+
 
   @override
   void dispose() {
@@ -272,9 +283,21 @@ class _HomeState extends State<Home> {
                 }).toList(),
               ),
 
-            )
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed:(){
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchBar(),
+                ),
+              );
+            } , 
+            child: Text("Try gemini"))
           ],
         ),
+
       ),
     );
   }

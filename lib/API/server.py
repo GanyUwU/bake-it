@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
+from pydantic import AnyUrl
+from typing import Optional
 import requests
 from bs4 import BeautifulSoup
 import re
@@ -9,6 +11,23 @@ from fractions import Fraction
 import json
 
 app = FastAPI()
+class IngredientResult(BaseModel):
+    quantity: float
+    unit: str
+    ingredient: str
+    notes: list[str] = []
+    size_modifier: Optional[str] = None
+    text: str
+    grams: Optional[float] = None
+    message: Optional[str] = None
+
+class RecipeResult(BaseModel):
+    title: str
+    ingredients: list[IngredientResult]
+    instructions: list[str]
+    url: str
+
+
 
 class IngredientParser:
     def __init__(self):
@@ -17,6 +36,8 @@ class IngredientParser:
             "tsp": "tsp", "teaspoon": "tsp", "teaspoons": "tsp",
             "tbsp": "tbsp", "tablespoon": "tbsp", "tablespoons": "tbsp",
             "cup": "cup", "cups": "cup",
+            "cups": "cup", "c": "cup",
+            "g": "gram", "grams": "gram",
             "gram": "gram", "grams": "gram", "g": "gram",
             "ounce": "ounce", "oz": "ounce", "ounces": "ounce",
             "pound": "pound", "lb": "pound", "lbs": "pound",
@@ -132,6 +153,14 @@ class IngredientParser:
                           matched_span = doc[token.i:token.i+2]
                   except ValueError:
                       pass
+      if unit == "unit":
+        for token in doc:
+            if token.text.lower() in self.unit_map:
+                unit = self._normalize_unit(token.text)
+                # Look for quantity in previous token if not already set
+                if token.i > 0 and doc[token.i-1].like_num:
+                    quantity = float(doc[token.i-1].text)
+                break
 
       # Extract remaining tokens
       for token in doc:
@@ -525,12 +554,13 @@ class IngredientConverter:
                 }
 
             grams = quantity * grams_per
+            print(f"[CONVERTER CALCULATION] {quantity} {unit} * {grams_per} = {grams}g")
             return {
                 "grams": round(grams, 1),
                 "message": f"Converted {quantity} {unit} {identified}",
                 "original": parsed_ingredient
             }
-            print(f"[CONVERTER CALCULATION] {quantity} {unit} * {grams_per} = {grams}g")
+            
 
         except Exception as e:
             return {
@@ -741,7 +771,7 @@ class BakingRecipeScraper:
         
        
 # ✅ POST request (Accepts JSON body)
-@app.post("/scrape")
+@app.post("/scrape" ,response_model=RecipeResult)
 async def scrape_recipe(request: ScrapeRequest):
     try:
         scraper = BakingRecipeScraper(request.url)
