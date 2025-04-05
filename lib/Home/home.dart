@@ -1,8 +1,8 @@
-import 'package:a1/API/gemini.dart';
-import 'package:a1/Home/recipe.dart';
-import 'package:a1/Home/search_display.dart';
-import 'package:a1/Home/trial_s.dart';
-import 'package:a1/Widget/gemini_display.dart';
+// import 'package:a1/API/gemini.dart';
+import 'recipe.dart';
+// import 'package:a1/Home/search_display.dart';
+// import 'package:a1/Home/trial_s.dart';
+// import 'package:a1/Widget/gemini_display.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -15,46 +15,52 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  List<Map<String, dynamic>> allRecipes = [];
+  List<Map<String, dynamic>> needToTryRecipes = [];
+  List<Map<String, dynamic>> summerRecipes = [];
 
-
-  final List<Map<String, String>> allRecipes = [
-    {
-      'title': 'Morning Pancakes',
-      'description': 'Deep-fried ball of spiced with ground chickpeas or fava beans.',
-      'image': 'assets/pancake.jpg', // Replace with your image
-      'time': '1h',
-      'difficulty': 'Easy',
-      'calories': '300 kcal',
-      'details': 'Step 1: Mix ingredients...\nStep 2: Cook on a pan...',
-    },
-    {
-      'title': 'Fresh Tofu Salad',
-      'description': 'Crispy tofu, greens, veggies, and tangy sesame-ginger dressing.',
-      'image': 'assets/tofu.jpg', // Replace with your image
-      'time': '1h',
-      'difficulty': 'Medium',
-      'calories': '470 kcal',
-      'details': 'Step 1: Prepare tofu...\nStep 2: Toss with greens...',
-    },
-    {
-      'title': 'Summer Pasta',
-      'description': 'Light pasta with fresh summer veggies.',
-      'image': 'assets/pasta/jpg', // Replace with your image
-      'time': '45m',
-      'difficulty': 'Easy',
-      'calories': '350 kcal',
-      'details': 'Step 1: Boil pasta...\nStep 2: Mix with veggies...',
-    },
-  ];
-
-  List<Map<String, String>> filteredRecipes = [];
+  List<Map<String, dynamic>> filteredRecipes = [];
   TextEditingController searchController = TextEditingController();
 
+  Future<void> fetchRecipesAutomatically() async {
+    final url = Uri.parse(
+        'https://www.themealdb.com/api/json/v1/1/filter.php?c=Dessert');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final meals = data['meals'] as List;
+
+      final limitedMeals = meals.take(8).toList();
+
+      final recipes = limitedMeals.map((meal) {
+        return {
+          'title': meal['strMeal'] ?? 'No Title',
+          'description': 'Delicious and easy to make dessert.', // Placeholder
+          'image': meal['strMealThumb'] ?? '',
+          'time': '30m',
+          'difficulty': 'Medium',
+          'calories': '400 kcal',
+          'details': 'Follow simple steps to prepare this delightful treat.',
+        };
+      }).toList();
+
+      setState(() {
+        allRecipes = recipes;
+        needToTryRecipes = recipes.sublist(0, 4);
+        summerRecipes = recipes.sublist(4, 8);
+        filteredRecipes = recipes; // for general search, optional
+      });
+    } else {
+      throw Exception('Failed to fetch recipes');
+    }
+  }
+
+  @override
   @override
   void initState() {
     super.initState();
-    filteredRecipes = List.from(allRecipes); // Initially show all recipes
-    searchController.addListener(_filterRecipes);
+    fetchRecipesAutomatically();
   }
 
   void _filterRecipes() {
@@ -67,7 +73,6 @@ class _HomeState extends State<Home> {
     });
   }
 
-
   final TextEditingController _urlController = TextEditingController();
   String _recipeResult = "";
 
@@ -75,7 +80,7 @@ class _HomeState extends State<Home> {
   Future<void> fetchRecipeData(String url) async {
     //final apiUrl = "http://192.168.0.102:8000/scrape"; // replace with your server address
     final apiUrl = "http://10.0.2.2:8000/scrape";
-     print("Making POST request to $apiUrl with body: $url"); // <--- Debug
+    print("Making POST request to $apiUrl with body: $url"); // <--- Debug
 
     try {
       final response = await http.post(
@@ -92,7 +97,8 @@ class _HomeState extends State<Home> {
 
         final data = json.decode(response.body);
         setState(() {
-          _recipeResult = json.encode(data, toEncodable: (obj) => obj.toString());
+          _recipeResult =
+              json.encode(data, toEncodable: (obj) => obj.toString());
         });
         // final ingredients = data["ingredients"]?.join("\n") ?? "No ingredients found";
         final title = data["title"] ?? "Recipe";
@@ -104,21 +110,19 @@ class _HomeState extends State<Home> {
         // print("Parsed ingredients: $parsedIngredients"); // <--- Debug
 
         // Inside fetchRecipeData()
-        final parsedIngredients = (data['ingredients'] as List)
-            .map((item) {
-              final grams = item['grams']?.toStringAsFixed(1); // Round to 1 decimal
-              return "${item['quantity']} ${item['unit']} ${item['ingredient']}${grams != null ? ' ($grams g)' : ''}";
-            })
-            .join("\n");
+        final parsedIngredients = (data['ingredients'] as List).map((item) {
+          final grams = item['grams']?.toStringAsFixed(1); // Round to 1 decimal
+          return "${item['quantity']} ${item['unit']} ${item['ingredient']}${grams != null ? ' ($grams g)' : ''}";
+        }).join("\n");
         print("Parsed ingredients: $parsedIngredients"); // <--- Debug
 
-        final recipe = Recipe.fromApiData(data);
-        Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RecipeDetailView(recipe: recipe,)
-        ),
-      );
+        // final recipe = Recipe.fromApiData(data);
+        //   Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //     builder: (context) => RecipeDetailView(recipe: recipe,)
+        //   ),
+        // );
         print("Recipe data: $_recipeResult");
       } else {
         setState(() {
@@ -133,7 +137,6 @@ class _HomeState extends State<Home> {
     }
   }
 
-
   @override
   void dispose() {
     _urlController.dispose();
@@ -147,27 +150,23 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFFBDBABA),
-
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.menu, color: Colors.black),
           onPressed: () {},
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           // Header
-            Text(
+          Text(
             'Embark on Your Cooking Journey',
             style: TextStyle(
-              fontSize: 15 ,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
-              fontFamily:'Sanfrans',
+              fontFamily: 'Sanfrans',
               height: 1.2,
-              ),
             ),
-         ]
-        ),
+          ),
+        ]),
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_none, color: Colors.black),
@@ -175,134 +174,131 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 20),
 
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
-
-          children: [
-            SizedBox(height: 20),// Search bar with TextField and a search button
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _urlController,
-                      decoration: InputDecoration(
-                        hintText: "Enter Recipe URL",
-                        prefixIcon: Icon(Icons.search, color: Colors.grey),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 14),
+              // Recipe URL input section
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _urlController,
+                        decoration: InputDecoration(
+                          hintText: "Enter Recipe URL",
+                          prefixIcon: Icon(Icons.search, color: Colors.grey),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 14),
+                        ),
                       ),
                     ),
-                  ),
+                    IconButton(
+                      icon: Icon(Icons.send, color: Colors.black),
+                      onPressed: () {
+                        final url = _urlController.text;
+                        if (url.isNotEmpty) fetchRecipeData(url);
+                      },
+                    )
+                  ],
+                ),
+              ),
 
-                  
-                  IconButton(
-                    icon: Icon(Icons.send, color: Colors.black),
-                    onPressed: () {
-                      print("Send button tapped");
-                      // Trigger API call when button is pressed
-                      final url = _urlController.text;
-                      if (url.isNotEmpty) {
-                        fetchRecipeData(url);
-                      }
-                    },
-                  )
+              SizedBox(height: 20),
+
+              // Need to Try Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Need to Try',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  TextButton(
+                    onPressed: () {},
+                    child:
+                        Text('See all', style: TextStyle(color: Colors.green)),
+                  ),
                 ],
               ),
-            ),
-            SizedBox(height: 20),
-            // Display the recipe result
 
-            SizedBox(height: 20),
-            // Need to Try Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Need to Try',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: needToTryRecipes.map((recipe) {
+                    return RecipeCard(
+                      title: recipe['title']!,
+                      description: recipe['description']!,
+                      imageUrl: recipe['image']!,
+                      time: recipe['time']!,
+                      difficulty: recipe['difficulty']!,
+                      calories: recipe['calories']!,
+                      details: recipe['details']!,
+                    );
+                  }).toList(),
                 ),
-                TextButton(
-                  onPressed: () {},
-                  child: Text('See all', style: TextStyle(color: Colors.green)),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: filteredRecipes.map((recipe) {
-                  return RecipeCard(
-                    title: recipe['title']!,
-                    description: recipe['description']!,
-                    imageUrl: recipe['image']!,
-                    time: recipe['time']!,
-                    difficulty: recipe['difficulty']!,
-                    calories: recipe['calories']!,
-                    details: recipe['details']!,
-                  );
-                }).toList(),
-              ),
-            ),
-            SizedBox(height: 20),
-            // Summer Selection Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Summer Selection',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Text('See all', style: TextStyle(color: Colors.green)),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: filteredRecipes.where((recipe) => recipe['title']!.contains('Summer')).map((recipe) {
-                  return RecipeCard(
-                    title: recipe['title']!,
-                    description: recipe['description']!,
-                    imageUrl: recipe['image']!,
-                    time: recipe['time']!,
-                    difficulty: recipe['difficulty']!,
-                    calories: recipe['calories']!,
-                    details: recipe['details']!,
-                  );
-                }).toList(),
               ),
 
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed:(){
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SearchBar(),
+              SizedBox(height: 20),
+
+              // Summer Selection Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Summer Selection',
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                  TextButton(
+                    onPressed: () {},
+                    child:
+                        Text('See all', style: TextStyle(color: Colors.green)),
+                  ),
+                ],
+              ),
+
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: summerRecipes.map((recipe) {
+                    return RecipeCard(
+                      title: recipe['title']!,
+                      description: recipe['description']!,
+                      imageUrl: recipe['image']!,
+                      time: recipe['time']!,
+                      difficulty: recipe['difficulty']!,
+                      calories: recipe['calories']!,
+                      details: recipe['details']!,
+                    );
+                  }).toList(),
                 ),
-              );
-            } , 
-            child: Text("Try gemini"))
-          ],
+              ),
+
+              SizedBox(height: 20),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SearchBar()),
+                  );
+                },
+                child: Text("Try Gemini"),
+              ),
+              SizedBox(height: 20),
+            ],
+          ),
         ),
-
       ),
     );
   }
 }
-
 
 class RecipeCard extends StatelessWidget {
   final String title;
@@ -392,7 +388,8 @@ class RecipeCard extends StatelessWidget {
                 SizedBox(width: 5),
                 Text(difficulty, style: TextStyle(fontSize: 12)),
                 SizedBox(width: 10),
-                Icon(Icons.local_fire_department, size: 16, color: Colors.green),
+                Icon(Icons.local_fire_department,
+                    size: 16, color: Colors.green),
                 SizedBox(width: 5),
                 Text(calories, style: TextStyle(fontSize: 12)),
               ],
