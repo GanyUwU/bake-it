@@ -155,19 +155,32 @@ class _RecipeDetailViewState extends State<RecipeDetailView>
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: Column(
-          children: [
-            // Top navigation and image area
-            _buildRecipeHeader(),
-
-            // Recipe details content
-            Expanded(
-              child: _buildRecipeDetails(),
+        child: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: <Color>[
+                //Color(0xFF7C7A7A),
+                Color(0xffcccaca),
+                Color(0xFFFFFFFF)
+              ],
             ),
+          ),
+          child: Column(
+            children: [
+              // Top navigation and image area
+              _buildRecipeHeader(),
 
-            // Bottom navigation
-            _buildBottomNavigation(),
-          ],
+              // Recipe details content
+              Expanded(
+                child: _buildRecipeDetails(),
+              ),
+
+              // Bottom navigation
+              // _buildBottomNavigation(),
+            ],
+          ),
         ),
       ),
     );
@@ -176,7 +189,7 @@ class _RecipeDetailViewState extends State<RecipeDetailView>
   Widget _buildRecipeHeader() {
     return Stack(
       children: [
-        // Recipe image (simplified for FlutLab)
+        // Recipe image
         Container(
           height: 250,
           width: double.infinity,
@@ -219,28 +232,6 @@ class _RecipeDetailViewState extends State<RecipeDetailView>
               _buildIconButton(Icons.arrow_back, () {
                 Navigator.pop(context); // Add navigation back
               }),
-            ],
-          ),
-        ),
-
-        // Pagination dots
-        Positioned(
-          bottom: 16,
-          left: 0,
-          right: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              for (int i = 0; i < 3; i++)
-                Container(
-                  width: 8,
-                  height: 8,
-                  margin: const EdgeInsets.symmetric(horizontal: 2),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: i == 1 ? Colors.grey[700] : Colors.grey[400],
-                  ),
-                ),
             ],
           ),
         ),
@@ -521,9 +512,9 @@ class _RecipeDetailViewState extends State<RecipeDetailView>
                 date: ['Feb 25, 2025', 'Mar 12, 2025', 'Feb 19, 2025'][index],
                 rating: [5.0, 4.0, 4.5][index],
                 comment: [
-                  'These macarons are absolutely delicious! The recipe is easy to follow and the results were better than the ones from my local bakery!',
+                  'This cake are absolutely delicious! The recipe is easy to follow and the results were better than the ones from my local bakery!',
                   'Good recipe overall, but I had to adjust the baking time for my oven. I would suggest checking them earlier.',
-                  'Loved these macarons! The chocolate ganache filling was divine. Will definitely make these again for special occasions.'
+                  'Loved this cake! The vanilla filling was divine. Will definitely make these again for special occasions.'
                 ][index],
               );
             }),
@@ -561,52 +552,52 @@ class _RecipeDetailViewState extends State<RecipeDetailView>
     );
   }
 
-  Widget _buildBottomNavigation() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildNavItem(Icons.home_outlined, 'Home', false),
-          _buildNavItem(Icons.search, 'Search', false),
-          _buildNavItem(Icons.restaurant_menu, 'Recipes', true),
-          _buildNavItem(Icons.favorite_outline, 'Favorites', false),
-          _buildNavItem(Icons.person_outline, 'Profile', false),
-        ],
-      ),
-    );
-  }
+  // Widget _buildBottomNavigation() {
+  //   return Container(
+  //     padding: const EdgeInsets.all(16),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.black.withOpacity(0.05),
+  //           blurRadius: 8,
+  //           offset: const Offset(0, -4),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //       children: [
+  //         _buildNavItem(Icons.home_outlined, 'Home', false),
+  //         _buildNavItem(Icons.search, 'Search', false),
+  //         _buildNavItem(Icons.restaurant_menu, 'Recipes', true),
+  //         _buildNavItem(Icons.favorite_outline, 'Favorites', false),
+  //         _buildNavItem(Icons.person_outline, 'Profile', false),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildNavItem(IconData icon, String label, bool isActive) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          color: isActive ? Colors.green : Colors.grey,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: isActive ? Colors.green : Colors.grey,
-            fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildNavItem(IconData icon, String label, bool isActive) {
+  //   return Column(
+  //     mainAxisSize: MainAxisSize.min,
+  //     children: [
+  //       Icon(
+  //         icon,
+  //         color: isActive ? Colors.green : Colors.grey,
+  //       ),
+  //       const SizedBox(height: 4),
+  //       Text(
+  //         label,
+  //         style: TextStyle(
+  //           fontSize: 12,
+  //           color: isActive ? Colors.green : Colors.grey,
+  //           fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 }
 
 class RecipeInfoChip extends StatelessWidget {

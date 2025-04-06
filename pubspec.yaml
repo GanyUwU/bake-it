@@ -39,6 +39,8 @@ dependencies:
   cloud_firestore: ^5.6.5
   google_sign_in: ^6.2.2
   http: ^1.3.0
+  fluttertoast: ^8.2.1
+
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +73,7 @@ flutter:
      - assets/pancake.jpg
      - assets/pasta.jpg
      - assets/tofu.jpg
+     - assets/user.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

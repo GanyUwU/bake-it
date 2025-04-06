@@ -1,8 +1,10 @@
 import 'package:a1/Home/home.dart';
 import 'package:a1/Home/splash.dart';
 import 'package:a1/Widget/new_recipe_prakyat.dart';
+import 'package:a1/Widget/search_bar_gem.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'API/try.dart';
 import 'Home/profile.dart';
 
 import 'firebase_options.dart';
@@ -14,9 +16,8 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(MaterialApp(
-
-      home: Splash()
-      //home: RecipeApp(),
+      //home: SearchBar_gem(),
+      home: Splash(),
       //home: Home(),
   ));
 }

@@ -80,7 +80,7 @@ class _HomeState extends State<Home> {
   Future<void> fetchRecipeData(String url) async {
     final apiUrl = "http://10.64.81.58:8000/scrape"; // replace with your server address
     //final apiUrl = "http://10.0.2.2:8000/scrape";
-     print("Making POST request to $apiUrl with body: $url"); // <--- Debug
+    print("Making POST request to $apiUrl with body: $url"); // <--- Debug
 
     try {
       final response = await http.post(
@@ -112,10 +112,10 @@ class _HomeState extends State<Home> {
         // Inside fetchRecipeData()
         final parsedIngredients = (data['ingredients'] as List)
             .map((item) {
-              final grams = item['grams']?.toStringAsFixed(1); // Round to 1 decimal
+          final grams = item['grams']?.toStringAsFixed(1); // Round to 1 decimal
           return "${item['quantity']} ${item['unit']} ${item['ingredient']}${grams !=
               null ? ' ($grams g)' : ''}";
-            })
+        })
             .join("\n");
         print("Parsed ingredients: $parsedIngredients"); // <--- Debug
 
@@ -195,124 +195,124 @@ class _HomeState extends State<Home> {
           ),
         ),
         child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        child: Column(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
             children: [
-            SizedBox(height: 20),// Search bar with TextField and a search button
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _urlController,
-                      decoration: InputDecoration(
-                        hintText: "Enter Recipe URL",
-                        prefixIcon: Icon(Icons.search, color: Colors.grey),
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.symmetric(vertical: 14),
+              SizedBox(height: 20),// Search bar with TextField and a search button
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _urlController,
+                        decoration: InputDecoration(
+                          hintText: "Enter Recipe URL",
+                          prefixIcon: Icon(Icons.search, color: Colors.grey),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.symmetric(vertical: 14),
+                        ),
                       ),
                     ),
-                  ),
 
-                  
-                  IconButton(
-                    icon: Icon(Icons.send, color: Colors.black),
-                    onPressed: () {
-                      print("Send button tapped");
-                      // Trigger API call when button is pressed
-                      final url = _urlController.text;
-                      if (url.isNotEmpty) {
-                        fetchRecipeData(url);
-                      }
-                    },
-                  )
+
+                    IconButton(
+                      icon: Icon(Icons.send, color: Colors.black),
+                      onPressed: () {
+                        print("Send button tapped");
+                        // Trigger API call when button is pressed
+                        final url = _urlController.text;
+                        if (url.isNotEmpty) {
+                          fetchRecipeData(url);
+                        }
+                      },
+                    )
+                  ],
+                ),
+              ),
+              SizedBox(height: 20),
+              // Display the recipe result
+
+              SizedBox(height: 20),
+              // Need to Try Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Need to Try',
+                    style: TextStyle(fontSize: 18,fontFamily: "Sanfrans", fontWeight: FontWeight.bold),
+                  ),
+                  TextButton(
+                    onPressed: () {},
+                    child: Text('See all', style: TextStyle(fontFamily: "Sanfrans",color: Colors.black)),
+                  ),
                 ],
               ),
-            ),
-            SizedBox(height: 20),
-            // Display the recipe result
-
-            SizedBox(height: 20),
-            // Need to Try Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Need to Try',
-                    style: TextStyle(fontSize: 18,fontFamily: "Sanfrans", fontWeight: FontWeight.bold),
+              SizedBox(height: 10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: filteredRecipes.map((recipe) {
+                    return RecipeCard(
+                      title: recipe['title']!,
+                      description: recipe['description']!,
+                      imageUrl: recipe['image']!,
+                      time: recipe['time']!,
+                      difficulty: recipe['difficulty']!,
+                      calories: recipe['calories']!,
+                      details: recipe['details']!,
+                    );
+                  }).toList(),
                 ),
-                TextButton(
-                  onPressed: () {},
-                    child: Text('See all', style: TextStyle(fontFamily: "Sanfrans",color: Colors.black)),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: filteredRecipes.map((recipe) {
-                  return RecipeCard(
-                    title: recipe['title']!,
-                    description: recipe['description']!,
-                    imageUrl: recipe['image']!,
-                    time: recipe['time']!,
-                    difficulty: recipe['difficulty']!,
-                    calories: recipe['calories']!,
-                    details: recipe['details']!,
-                  );
-                }).toList(),
               ),
-            ),
-            SizedBox(height: 20),
-            // Summer Selection Section
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Summer Selection',
+              SizedBox(height: 20),
+              // Summer Selection Section
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Summer Selection',
                     style: TextStyle(fontSize: 18, fontFamily: "Sanfrans",fontWeight: FontWeight.bold),
-                ),
-                TextButton(
-                  onPressed: () {},
+                  ),
+                  TextButton(
+                    onPressed: () {},
                     child: Text('See all', style: TextStyle(fontFamily: "Sanfrans",color: Colors.black)),
-                ),
-              ],
-            ),
-            SizedBox(height: 10),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: filteredRecipes.where((recipe) => recipe['title']!.contains('Summer')).map((recipe) {
-                  return RecipeCard(
-                    title: recipe['title']!,
-                    description: recipe['description']!,
-                    imageUrl: recipe['image']!,
-                    time: recipe['time']!,
-                    difficulty: recipe['difficulty']!,
-                    calories: recipe['calories']!,
-                    details: recipe['details']!,
-                  );
-                }).toList(),
+                  ),
+                ],
               ),
+              SizedBox(height: 10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: filteredRecipes.where((recipe) => recipe['title']!.contains('Summer')).map((recipe) {
+                    return RecipeCard(
+                      title: recipe['title']!,
+                      description: recipe['description']!,
+                      imageUrl: recipe['image']!,
+                      time: recipe['time']!,
+                      difficulty: recipe['difficulty']!,
+                      calories: recipe['calories']!,
+                      details: recipe['details']!,
+                    );
+                  }).toList(),
+                ),
 
-            ),
-            SizedBox(height: 20),
+              ),
+              SizedBox(height: 20),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-              onPressed:(){
-              Navigator.push(
-                context,
-                MaterialPageRoute(
+                  onPressed:(){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
                       builder: (context) => SearchBar_gem(),
-                ),
-              );
-            } , 
+                    ),
+                  );
+                } ,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white, // Button background color
                     elevation: 8, // Shadow depth
@@ -331,8 +331,8 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               )
-          ],
-        ),
+            ],
+          ),
          ),
       ),
     );

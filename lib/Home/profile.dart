@@ -49,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               radius: 50,
               backgroundImage: userData?['profilePic'] != null
                   ? NetworkImage(userData!['profilePic']) // Firebase Storage URL
-                  : AssetImage('assets/profile.jpg') as ImageProvider,
+                  : AssetImage('assets/user.png') as ImageProvider,
               backgroundColor: Colors.white,
             ),
             SizedBox(height: 10),
