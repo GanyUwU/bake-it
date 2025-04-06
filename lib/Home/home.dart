@@ -72,7 +72,6 @@ class _HomeState extends State<Home> {
     });
   }
 
-
   final TextEditingController _urlController = TextEditingController();
   String _recipeResult = "";
 
@@ -97,6 +96,8 @@ class _HomeState extends State<Home> {
 
         final data = json.decode(response.body);
         setState(() {
+          _recipeResult =
+              json.encode(data, toEncodable: (obj) => obj.toString());
           _recipeResult =
               json.encode(data, toEncodable: (obj) => obj.toString());
         });
@@ -140,7 +141,6 @@ class _HomeState extends State<Home> {
     }
   }
 
-
   @override
   void dispose() {
     _urlController.dispose();
@@ -159,21 +159,18 @@ class _HomeState extends State<Home> {
           icon: Icon(Icons.menu, color: Colors.black),
           onPressed: () {},
         ),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           // Header
-            Text(
+          Text(
             'Embark on Your Cooking Journey',
             style: TextStyle(
-              fontSize: 15 ,
+              fontSize: 15,
               fontWeight: FontWeight.bold,
-              fontFamily:'Sanfrans',
+              fontFamily: 'Sanfrans',
               height: 1.2,
-              ),
             ),
-         ]
-        ),
+          ),
+        ]),
         actions: [
           IconButton(
             icon: Icon(Icons.notifications_none, color: Colors.black),
@@ -339,7 +336,6 @@ class _HomeState extends State<Home> {
   }
 }
 
-
 class RecipeCard extends StatelessWidget {
   final String title;
   final String description;
@@ -428,7 +424,8 @@ class RecipeCard extends StatelessWidget {
                 SizedBox(width: 5),
                 Text(difficulty, style: TextStyle(fontSize: 12)),
                 SizedBox(width: 10),
-                Icon(Icons.local_fire_department, size: 16, color: Colors.green),
+                Icon(Icons.local_fire_department,
+                    size: 16, color: Colors.green),
                 SizedBox(width: 5),
                 Text(calories, style: TextStyle(fontSize: 12)),
               ],
