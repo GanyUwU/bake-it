@@ -2,48 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:a1/Home/home.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-//
-// void main() {
-//   runApp(const MyApp());
-// }
-//
-// class MyApp extends StatelessWidget {
-//   const MyApp({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       title: 'Recipe App',
-//       theme: ThemeData(
-//         primarySwatch: Colors.green,
-//         fontFamily: 'Sanfrans',
-//         textTheme: const TextTheme(
-//           displayLarge:
-//           TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-//           headlineMedium:
-//           TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-//           titleLarge:
-//           TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-//           bodyLarge: TextStyle(color: Colors.black87, height: 1.5),
-//           bodyMedium: TextStyle(color: Colors.black54, height: 1.5),
-//         ),
-//         elevatedButtonTheme: ElevatedButtonThemeData(
-//           style: ElevatedButton.styleFrom(
-//             foregroundColor: Colors.white,
-//             backgroundColor: Colors.green,
-//             elevation: 2,
-//             shape: RoundedRectangleBorder(
-//               borderRadius: BorderRadius.circular(24),
-//             ),
-//             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-//           ),
-//         ),
-//       ),
-//       home: const RecipeDetailView(),
-//     );
-//   }
-// }
 
 class Recipe {
   final String title;
