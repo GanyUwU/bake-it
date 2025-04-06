@@ -1,8 +1,4 @@
-import 'package:a1/API/gemini.dart';
-//import 'package:a1/Home/recipe.dart';
-import 'package:a1/Home/search_display.dart';
 import 'package:a1/Home/URL_display.dart';
-import 'package:a1/Widget/gemini_display.dart';
 import 'package:a1/Widget/search_bar_gem.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -26,7 +22,7 @@ class _HomeState extends State<Home> {
     {
       'title': 'Chocolate Chip Cookies',
       'description': 'Classic homemade cookies with gooey chocolate chips',
-      'image': 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?ixlib=rb-4.0.3',
+      'image': 'assets/cookies.png',
       'time': '25m',
       'difficulty': 'Easy',
       'calories': '180 kcal',
@@ -35,7 +31,7 @@ class _HomeState extends State<Home> {
     {
       'title': 'Vanilla Pound Cake',
       'description': 'Rich and buttery classic pound cake with vanilla flavor',
-      'image': 'https://images.unsplash.com/photo-1605291445244-9ff5e28a5376?ixlib=rb-4.0.3',
+      'image': 'assets/vanilla.png',
       'time': '75m',
       'difficulty': 'Medium',
       'calories': '420 kcal',
@@ -44,7 +40,7 @@ class _HomeState extends State<Home> {
     {
       'title': 'Summer Berry Scones',
       'description': 'Buttery scones filled with seasonal fresh berries',
-      'image': 'https://images.unsplash.com/photo-1592394533824-9440e5d61b43?ixlib=rb-4.0.3',
+      'image': 'assets/summer-berry-scones.png',
       'time': '30m',
       'difficulty': 'Easy',
       'calories': '320 kcal',
@@ -53,7 +49,7 @@ class _HomeState extends State<Home> {
     {
       'title': 'Double Chocolate Brownies',
       'description': 'Rich and fudgy chocolate brownies with chocolate chips',
-      'image': 'https://images.unsplash.com/photo-1606313564200-e75d5e30476c?ixlib=rb-4.0.3',
+      'image': 'assets/cake.png',
       'time': '45m',
       'difficulty': 'Medium',
       'calories': '450 kcal',
@@ -62,7 +58,7 @@ class _HomeState extends State<Home> {
     {
       'title': 'Summer Fruit Tart',
       'description': 'Buttery pastry crust filled with custard and fresh fruits',
-      'image': 'https://images.unsplash.com/photo-1562005754-5f74feeef77a?ixlib=rb-4.0.3',
+      'image': 'assets/summer-fruit.png',
       'time': '90m',
       'difficulty': 'Hard',
       'calories': '380 kcal',
@@ -71,7 +67,7 @@ class _HomeState extends State<Home> {
     {
       'title': 'Summer Lemon Bars',
       'description': 'Tangy lemon filling on a buttery shortbread crust',
-      'image': 'https://images.unsplash.com/photo-1576618148400-f54bed99fcfd?ixlib=rb-4.0.3',
+      'image': 'assets/muffin.png',
       'time': '60m',
       'difficulty': 'Medium',
       'calories': '280 kcal',
@@ -104,12 +100,12 @@ class _HomeState extends State<Home> {
         }).toList();
       } else {
         // If API fails, return static recipes
-        print("API failed, using static recipes");
+
         return staticRecipes;
       }
     } catch (e) {
       // If error occurs, return static recipes
-      print("Error fetching recipes: $e");
+
       return staticRecipes;
     }
   }
@@ -148,9 +144,9 @@ class _HomeState extends State<Home> {
 
   // Function to send the POST request to your backend API
   Future<void> fetchRecipeData(String url) async {
-    //final apiUrl = "http://10.64.81.58:8000/scrape"; // replace with your server address
-    final apiUrl = "http://10.0.2.2:8000/scrape";
-    print("Making POST request to $apiUrl with body: $url"); // <--- Debug
+
+    final apiUrl = "https://recipe-scraper-service-239433712372.asia-south1.run.app/scrape";
+
 
     try {
       final response = await http.post(
@@ -159,8 +155,6 @@ class _HomeState extends State<Home> {
         body: json.encode({"url": url}),
       );
 
-      print("Response status: ${response.statusCode}");
-      print("Response body: ${response.body}");
 
       if (response.statusCode == 200) {
         // Parse the JSON response
@@ -182,22 +176,23 @@ class _HomeState extends State<Home> {
               null ? ' ($grams g)' : ''}";
         })
             .join("\n");
-        print("Parsed ingredients: $parsedIngredients"); // <--- Debug
+
 
         final recipe = Recipe.fromApiData(data);
+        if (!mounted) return;
         Navigator.push(
           context,
           MaterialPageRoute(
               builder: (context) => RecipeDetailView(recipe: recipe,)
           ),
         );
-        print("Recipe data: $_recipeResult");
+
       } else {
         // If API call fails, show static recipe detail
         _handleApiFailure(url);
       }
     } catch (e) {
-      print("Exception: $e"); // <--- Debug
+
       // If exception occurs, show static recipe detail
       _handleApiFailure(url);
     }
@@ -245,7 +240,7 @@ class _HomeState extends State<Home> {
         title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           // Header
           Text(
-            'Embark on Your Cooking Journey',
+            'Embark on Your Baking Journey',
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -303,7 +298,7 @@ class _HomeState extends State<Home> {
                       IconButton(
                         icon: Icon(Icons.send, color: Colors.black),
                         onPressed: () {
-                          print("Send button tapped");
+
                           // Trigger API call when button is pressed
                           final url = _urlController.text;
                           if (url.isNotEmpty) {
@@ -435,7 +430,7 @@ class RecipeCard extends StatelessWidget {
   final String calories;
   final String details;
 
-  RecipeCard({
+  const RecipeCard({super.key,
     required this.title,
     required this.description,
     required this.imageUrl,
@@ -470,7 +465,7 @@ class RecipeCard extends StatelessWidget {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
+                  child: Image.asset(
                     imageUrl,
                     height: 150,
                     width: double.infinity,
@@ -541,7 +536,7 @@ class RecipeDetailScreen extends StatelessWidget {
   final String imageUrl;
   final String details;
 
-  RecipeDetailScreen({
+  const RecipeDetailScreen({super.key,
     required this.title,
     required this.imageUrl,
     required this.details,
@@ -557,7 +552,7 @@ class RecipeDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.network(
+            Image.asset(
               imageUrl,
               height: 250,
               width: double.infinity,

@@ -16,7 +16,7 @@ class _SignInState extends State<SignIn> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  //final GoogleSignIn _googleSignIn = GoogleSignIn();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _obscureText = true;
   bool _rememberMe = true;
@@ -40,6 +40,7 @@ class _SignInState extends State<SignIn> {
             password: _password.text.trim()
         );
 
+        if (!mounted) return;
         // Navigate to home page on successful login
         Navigator.push(
           context, MaterialPageRoute(builder: (context)=>Home())
@@ -94,9 +95,11 @@ class _SignInState extends State<SignIn> {
 
       if (userCredential.user != null) {
         // Navigate to home page on successful login
+        if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/home');
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error signing in with Google: ${e.toString()}'),
@@ -157,7 +160,7 @@ class _SignInState extends State<SignIn> {
                           fontSize: 40,
                           fontFamily: "Sanfrans",
                           fontWeight: FontWeight.bold,
-                          color: accentColor.withOpacity(0.5),
+                          color: accentColor.withAlpha(128),
                         ),
                       ),
                       SizedBox(height: 8),
@@ -166,7 +169,7 @@ class _SignInState extends State<SignIn> {
                         style: TextStyle(
                           fontSize: 16,
                           fontFamily: "Sanfrans",
-                          color: accentColor.withOpacity(0.7),
+                          color: accentColor.withAlpha(176),
                         ),
                       ),
                     ],
@@ -213,7 +216,7 @@ class _SignInState extends State<SignIn> {
                     children: [
                       Expanded(
                         child: Divider(
-                          color: accentColor.withOpacity(0.3),
+                          color: accentColor.withAlpha(76),
                           thickness: 1,
                         ),
                       ),
@@ -222,7 +225,7 @@ class _SignInState extends State<SignIn> {
                         child: Text(
                           "or",
                           style: TextStyle(
-                            color: accentColor.withOpacity(0.7),
+                            color: accentColor.withAlpha(176),
                             fontSize: 14,
                             fontFamily: "Sanfrans",
                           ),
@@ -230,7 +233,7 @@ class _SignInState extends State<SignIn> {
                       ),
                       Expanded(
                         child: Divider(
-                          color: accentColor.withOpacity(0.3),
+                          color: accentColor.withAlpha(77),
                           thickness: 1,
                         ),
                       ),
@@ -245,8 +248,8 @@ class _SignInState extends State<SignIn> {
                     style: TextStyle(color: textColor),
                     decoration: InputDecoration(
                       labelText: "Email",
-                      labelStyle: TextStyle(color: accentColor.withOpacity(0.7)),
-                      prefixIcon: Icon(Icons.email_outlined, color: accentColor.withOpacity(0.7)),
+                      labelStyle: TextStyle(color: accentColor.withAlpha(176)),
+                      prefixIcon: Icon(Icons.email_outlined, color: accentColor.withAlpha(176)),
                       filled: true,
                       fillColor: surfaceColor,
                       border: OutlineInputBorder(
@@ -273,12 +276,12 @@ class _SignInState extends State<SignIn> {
                     style: TextStyle(color: textColor),
                     decoration: InputDecoration(
                       labelText: "Password",
-                      labelStyle: TextStyle(color: accentColor.withOpacity(0.7)),
-                      prefixIcon: Icon(Icons.lock_outline, color: accentColor.withOpacity(0.7)),
+                      labelStyle: TextStyle(color: accentColor.withAlpha(176)),
+                      prefixIcon: Icon(Icons.lock_outline, color: accentColor.withAlpha(176)),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _obscureText ? Icons.visibility_off : Icons.visibility,
-                          color: accentColor.withOpacity(0.7),
+                          color: accentColor.withAlpha(176),
                         ),
                         onPressed: _togglePasswordVisibility,
                       ),
@@ -317,14 +320,14 @@ class _SignInState extends State<SignIn> {
                               },
                               activeColor: accentColor,
                               checkColor: primaryColor,
-                              side: BorderSide(color: accentColor.withOpacity(0.5)),
+                              side: BorderSide(color: accentColor.withAlpha(128)),
                             ),
                           ),
                           SizedBox(width: 8),
                           Text(
                             "Remember me",
                             style: TextStyle(
-                              color: accentColor.withOpacity(0.9),
+                              color: accentColor.withAlpha(230),
                               fontSize: 14,
                               fontFamily: "Sanfrans",
                             ),
@@ -383,7 +386,7 @@ class _SignInState extends State<SignIn> {
                       Text(
                         "Don't have an account? ",
                         style: TextStyle(
-                          color: accentColor.withOpacity(0.7),
+                          color: accentColor.withAlpha(176),
                           fontSize: 14,
                           fontFamily: "Sanfrans",
                         ),

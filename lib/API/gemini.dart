@@ -32,8 +32,6 @@ Future<String> fetchRecipeFromGemini(String recipeName) async {
       body: jsonEncode(requestBody),
     );
 
-    print("Response Status Code: ${response.statusCode}");
-    print("Response Body: ${response.body}");
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
@@ -45,15 +43,15 @@ Future<String> fetchRecipeFromGemini(String recipeName) async {
           data['candidates'][0]['content']['parts'].isNotEmpty) {
         return data["candidates"][0]["content"]["parts"][0]["text"];
       } else {
-        print("Unexpected API response structure");
+
         return "Error: Unable to parse recipe from API response";
       }
     } else {
-      print("API Error Details: ${response.body}");
+
       return "Error fetching recipe. Status: ${response.statusCode}";
     }
   } catch (e) {
-    print("Exception occurred: $e");
+
     return "An unexpected error occurred: $e";
   }
 }

@@ -36,9 +36,9 @@ class IngredientParser:
             "tsp": "tsp", "teaspoon": "tsp", "teaspoons": "tsp",
             "tbsp": "tbsp", "tablespoon": "tbsp", "tablespoons": "tbsp",
             "cup": "cup", "cups": "cup",
-            "cups": "cup", "c": "cup",
+            "c": "cup",
             "g": "gram", "grams": "gram",
-            "gram": "gram", "grams": "gram", "g": "gram",
+            "gram": "gram", "g": "gram",
             "ounce": "ounce", "oz": "ounce", "ounces": "ounce",
             "pound": "pound", "lb": "pound", "lbs": "pound",
             "ml": "ml", "milliliter": "ml", "milliliters": "ml",
@@ -80,7 +80,7 @@ class IngredientParser:
         }
         
         #  Mapping unit variations (singular/plural)
-        self.unit_map = {u.rstrip("s"): u for u in self.unit_conversion.keys()}
+        #self.unit_map = {u.rstrip("s"): u for u in self.unit_conversion.keys()}
 
         self.fraction_map = {
             "½": 0.5, "⅓": 0.33, "⅔": 0.66,
@@ -520,7 +520,7 @@ class IngredientConverter:
                 return {
                     "grams": None,
                     "message": f"Unknown ingredient: {ingredient_name}",
-                    "original": parsed_ingredient
+                    "original_text": parsed_ingredient.get("text")
                 }
 
             # Handle size-based ingredients first (e.g. eggs)
@@ -532,7 +532,7 @@ class IngredientConverter:
                     return {
                         "grams": round(grams, 1),
                         "message": f"Converted {quantity} {size_modifier} {identified}",
-                        "original": parsed_ingredient
+                        "original_text": parsed_ingredient.get("text")
                     }
 
             # Handle note-based conversions (e.g. packed brown sugar)
@@ -550,7 +550,7 @@ class IngredientConverter:
                 return {
                     "grams": None,
                     "message": f"No conversion for {unit} of {identified}",
-                    "original": parsed_ingredient
+                    "original_text": parsed_ingredient.get("text")
                 }
 
             grams = quantity * grams_per
@@ -558,7 +558,7 @@ class IngredientConverter:
             return {
                 "grams": round(grams, 1),
                 "message": f"Converted {quantity} {unit} {identified}",
-                "original": parsed_ingredient
+               
             }
             
 

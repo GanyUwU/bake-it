@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'recipe_detail_screen.dart';
@@ -58,7 +59,9 @@ class _RecipeListScreenState extends State<RecipeListScreen> {
         });
       }
     } catch (e) {
-      print("Error fetching recipes: $e");
+      if (kDebugMode) {
+        print("Error fetching recipes: $e");
+      }
     } finally {
       setState(() {
         isLoading = false;

@@ -8,7 +8,7 @@ class RecipeDetailScreen extends StatefulWidget {
   const RecipeDetailScreen({super.key, required this.recipeId});
 
   @override
-  _RecipeDetailScreenState createState() => _RecipeDetailScreenState();
+  State<RecipeDetailScreen> createState() => _RecipeDetailScreenState();
 }
 
 class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
@@ -45,7 +45,7 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
       setState(() {
         isLoading = false;
       });
-      print('Error: $e');
+
     }
   }
 

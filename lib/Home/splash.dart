@@ -68,7 +68,7 @@ class _SplashState extends State<Splash> {
                       ),
                       const TextSpan(
                         text: "Like a Baker",
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Color(0xFF9E9E9E), // Pick your color
                         ),
                       ),

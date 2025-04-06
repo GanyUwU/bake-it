@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    print("Tabs length: ${tabs.length}");
+
     return MaterialApp(
       home: Scaffold(
         body: IndexedStack(
@@ -50,15 +50,15 @@ class _MyAppState extends State<MyApp> {
           fixedColor: Colors.black,
           items: const [
             BottomNavigationBarItem(
-              icon: Icon(Icons.home),
+              icon: Icon(Icons.home_outlined),
               label: "Home",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.food_bank),
+              icon: Icon(Icons.restaurant_menu),
               label: "Recipe",
             ),
              BottomNavigationBarItem(
-              icon: Icon(Icons.person),
+              icon: Icon(Icons.person_outline),
               label: "Profile",
             ),
           ],

@@ -43,6 +43,7 @@ class _AuthPageState extends State<AuthPage> {
         });
 
         // Navigate to home page on successful registration
+        if (!mounted) return;
         Navigator.push(context, MaterialPageRoute(builder: (context)=>Home()));
       } on FirebaseAuthException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -149,12 +150,12 @@ class _AuthPageState extends State<AuthPage> {
                     style: TextStyle(color: textColor),
                     decoration: InputDecoration(
                       labelText: 'Password',
-                      labelStyle: TextStyle(color: accentColor.withOpacity(0.7)),
-                      prefixIcon: Icon(Icons.lock_outline, color: accentColor.withOpacity(0.7)),
+                      labelStyle: TextStyle(color: accentColor.withAlpha(176)),
+                      prefixIcon: Icon(Icons.lock_outline, color: accentColor.withAlpha(176)),
                       suffixIcon: IconButton(
                         icon: Icon(
                           _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
-                          color: accentColor.withOpacity(0.7),
+                          color: accentColor.withAlpha(176),
                         ),
                         onPressed: () {
                           setState(() {
@@ -241,8 +242,8 @@ class _AuthPageState extends State<AuthPage> {
       style: TextStyle(color: Colors.white),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Color(0xFFE0E0E0).withOpacity(0.7)),
-        prefixIcon: Icon(prefixIcon, color: Color(0xFFE0E0E0).withOpacity(0.7)),
+        labelStyle: TextStyle(color: Color(0xFFE0E0E0).withAlpha(176)),
+        prefixIcon: Icon(prefixIcon, color: Color(0xFFE0E0E0).withAlpha(176)),
         filled: true,
         fillColor: Color(0xFF1E1E1E),
         border: OutlineInputBorder(

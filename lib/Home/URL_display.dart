@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:a1/Home/home.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class Recipe {
   final String title;
@@ -155,7 +152,7 @@ class _RecipeDetailViewState extends State<RecipeDetailView>
             color: const Color(0xFFF5F5F5),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withAlpha(26),
                 blurRadius: 8,
                 offset: const Offset(0, 4),
               ),
@@ -204,7 +201,7 @@ class _RecipeDetailViewState extends State<RecipeDetailView>
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(26),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -563,10 +560,10 @@ class RecipeInfoChip extends StatelessWidget {
   final String label;
 
   const RecipeInfoChip({
-    Key? key,
+    super.key,
     required this.icon,
     required this.label,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -578,7 +575,7 @@ class RecipeInfoChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(13),
             blurRadius: 2,
             offset: const Offset(0, 1),
           ),
@@ -604,11 +601,11 @@ class IngredientItem extends StatelessWidget {
   final Color iconColor;
 
   const IngredientItem({
-    Key? key,
+    super.key,
     required this.name,
     required this.amount,
     required this.iconColor,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -626,7 +623,7 @@ class IngredientItem extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.2),
+              color: iconColor.withAlpha(51),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(
@@ -666,10 +663,10 @@ class StepItem extends StatelessWidget {
   final String description;
 
   const StepItem({
-    Key? key,
+    super.key,
     required this.stepNumber,
     required this.description,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -735,12 +732,12 @@ class ReviewItem extends StatelessWidget {
   final String comment;
 
   const ReviewItem({
-    Key? key,
+    super.key,
     required this.username,
     required this.date,
     required this.rating,
     required this.comment,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -753,7 +750,7 @@ class ReviewItem extends StatelessWidget {
         border: Border.all(color: Colors.grey[200] ?? Colors.grey),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withAlpha(13),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -825,50 +822,6 @@ class ReviewItem extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-// Add this modified function to your home.dart file
-Future<void> fetchRecipeData(BuildContext context, String url) async {
-  final apiUrl = "http://10.0.2.2:8000/scrape";
-  print("Making POST request to $apiUrl with body: $url");
-
-  try {
-    final response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {"Content-Type": "application/json"},
-      body: json.encode({"url": url}),
-    );
-
-    print("Response status: ${response.statusCode}");
-    print("Response body: ${response.body}");
-
-    if (response.statusCode == 200) {
-      // Parse the JSON response
-      final data = json.decode(response.body);
-
-      // Create Recipe object from API data
-      final recipe = Recipe.fromApiData(data);
-
-      // Navigate to RecipeDetailView with the recipe data
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => RecipeDetailView(recipe: recipe)
-        ),
-      );
-    } else {
-      // Show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error loading recipe: ${response.statusCode}")),
-      );
-    }
-  } catch (e) {
-    print("Exception: $e");
-    // Show error message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("An error occurred: $e")),
     );
   }
 }

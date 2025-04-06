@@ -24,7 +24,7 @@ class _SearchBar_gemState extends State<SearchBar_gem> {
     );
 
     String recipeDetail = await fetchRecipeFromGemini(query);
-
+    if(!mounted) return;
     Navigator.of(context).pop(); // Close the loading dialog
 
     // Format and navigate
