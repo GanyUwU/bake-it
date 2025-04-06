@@ -3,6 +3,7 @@ import 'package:a1/Home/recipe.dart';
 import 'package:a1/Home/search_display.dart';
 import 'package:a1/Home/trial_s.dart';
 import 'package:a1/Widget/gemini_display.dart';
+import 'package:a1/Widget/search_bar_gem.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -16,45 +17,49 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
 
-
-  final List<Map<String, String>> allRecipes = [
-    {
-      'title': 'Morning Pancakes',
-      'description': 'Deep-fried ball of spiced with ground chickpeas or fava beans.',
-      'image': 'assets/pancake.jpg', // Replace with your image
-      'time': '1h',
-      'difficulty': 'Easy',
-      'calories': '300 kcal',
-      'details': 'Step 1: Mix ingredients...\nStep 2: Cook on a pan...',
-    },
-    {
-      'title': 'Fresh Tofu Salad',
-      'description': 'Crispy tofu, greens, veggies, and tangy sesame-ginger dressing.',
-      'image': 'assets/tofu.jpg', // Replace with your image
-      'time': '1h',
-      'difficulty': 'Medium',
-      'calories': '470 kcal',
-      'details': 'Step 1: Prepare tofu...\nStep 2: Toss with greens...',
-    },
-    {
-      'title': 'Summer Pasta',
-      'description': 'Light pasta with fresh summer veggies.',
-      'image': 'assets/pasta/jpg', // Replace with your image
-      'time': '45m',
-      'difficulty': 'Easy',
-      'calories': '350 kcal',
-      'details': 'Step 1: Boil pasta...\nStep 2: Mix with veggies...',
-    },
-  ];
-
-  List<Map<String, String>> filteredRecipes = [];
+  List<Map<String, dynamic>> allRecipes = [];
+  List<Map<String, dynamic>> filteredRecipes = [];
   TextEditingController searchController = TextEditingController();
+
+  Future<List<Map<String, dynamic>>> fetchRecipesAutomatically() async {
+    final url =
+    Uri.parse('https://www.themealdb.com/api/json/v1/1/search.php?s=');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final meals = data['meals'] as List;
+
+      return meals.take(4).map((meal) {
+        return {
+          'title': meal['strMeal'] ?? 'No Title',
+          'description':
+          meal['strInstructions']
+              ?.split('.')
+              .first ?? 'No Description',
+          'image': meal['strMealThumb'] ?? '',
+          'time': '30m', // Placeholder
+          'difficulty': 'Medium', // Placeholder
+          'calories': '400 kcal', // Placeholder
+          'details': meal['strInstructions'] ?? '',
+        };
+      }).toList();
+    } else {
+      throw Exception('Failed to fetch recipes from MealDB');
+    }
+  }
+
 
   @override
   void initState() {
     super.initState();
     filteredRecipes = List.from(allRecipes); // Initially show all recipes
     searchController.addListener(_filterRecipes);
+    fetchRecipesAutomatically().then((fetchedRecipes) {
+      setState(() {
+        allRecipes = fetchedRecipes;
+      });
+    });
   }
 
   void _filterRecipes() {
@@ -73,8 +78,8 @@ class _HomeState extends State<Home> {
 
   // Function to send the POST request to your backend API
   Future<void> fetchRecipeData(String url) async {
-    //final apiUrl = "http://192.168.0.102:8000/scrape"; // replace with your server address
-    final apiUrl = "http://10.0.2.2:8000/scrape";
+    final apiUrl = "http://10.64.81.58:8000/scrape"; // replace with your server address
+    //final apiUrl = "http://10.0.2.2:8000/scrape";
      print("Making POST request to $apiUrl with body: $url"); // <--- Debug
 
     try {
@@ -92,7 +97,8 @@ class _HomeState extends State<Home> {
 
         final data = json.decode(response.body);
         setState(() {
-          _recipeResult = json.encode(data, toEncodable: (obj) => obj.toString());
+          _recipeResult =
+              json.encode(data, toEncodable: (obj) => obj.toString());
         });
         // final ingredients = data["ingredients"]?.join("\n") ?? "No ingredients found";
         final title = data["title"] ?? "Recipe";
@@ -107,18 +113,19 @@ class _HomeState extends State<Home> {
         final parsedIngredients = (data['ingredients'] as List)
             .map((item) {
               final grams = item['grams']?.toStringAsFixed(1); // Round to 1 decimal
-              return "${item['quantity']} ${item['unit']} ${item['ingredient']}${grams != null ? ' ($grams g)' : ''}";
+          return "${item['quantity']} ${item['unit']} ${item['ingredient']}${grams !=
+              null ? ' ($grams g)' : ''}";
             })
             .join("\n");
         print("Parsed ingredients: $parsedIngredients"); // <--- Debug
 
         final recipe = Recipe.fromApiData(data);
         Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RecipeDetailView(recipe: recipe,)
-        ),
-      );
+          context,
+          MaterialPageRoute(
+              builder: (context) => RecipeDetailView(recipe: recipe,)
+          ),
+        );
         print("Recipe data: $_recipeResult");
       } else {
         setState(() {
@@ -147,7 +154,6 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color(0xFFBDBABA),
-
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.menu, color: Colors.black),
@@ -176,11 +182,22 @@ class _HomeState extends State<Home> {
         ],
       ),
 
-      body: Padding(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: <Color>[
+              //Color(0xFF7C7A7A),
+              Color(0xffcccaca),
+              Color(0xFFFFFFFF)
+            ],
+          ),
+        ),
+        child: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: Column(
-
-          children: [
+            children: [
             SizedBox(height: 20),// Search bar with TextField and a search button
             Container(
               decoration: BoxDecoration(
@@ -226,11 +243,11 @@ class _HomeState extends State<Home> {
               children: [
                 Text(
                   'Need to Try',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18,fontFamily: "Sanfrans", fontWeight: FontWeight.bold),
                 ),
                 TextButton(
                   onPressed: () {},
-                  child: Text('See all', style: TextStyle(color: Colors.green)),
+                    child: Text('See all', style: TextStyle(fontFamily: "Sanfrans",color: Colors.black)),
                 ),
               ],
             ),
@@ -258,11 +275,11 @@ class _HomeState extends State<Home> {
               children: [
                 Text(
                   'Summer Selection',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 18, fontFamily: "Sanfrans",fontWeight: FontWeight.bold),
                 ),
                 TextButton(
                   onPressed: () {},
-                  child: Text('See all', style: TextStyle(color: Colors.green)),
+                    child: Text('See all', style: TextStyle(fontFamily: "Sanfrans",color: Colors.black)),
                 ),
               ],
             ),
@@ -285,19 +302,38 @@ class _HomeState extends State<Home> {
 
             ),
             SizedBox(height: 20),
-            ElevatedButton(
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
               onPressed:(){
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => SearchBar(),
+                      builder: (context) => SearchBar_gem(),
                 ),
               );
             } , 
-            child: Text("Try gemini"))
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white, // Button background color
+                    elevation: 8, // Shadow depth
+                    shadowColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                child: Text("Try gemini",
+                  style: TextStyle(
+                    fontFamily: "Sanfrans",
+                    fontSize: 20,
+                    color: Colors.black
+                    ),
+                  ),
+                ),
+              )
           ],
         ),
-
+         ),
       ),
     );
   }
