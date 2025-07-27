@@ -1,5 +1,6 @@
 import 'package:a1/Home/URL_display.dart';
 import 'package:a1/Widget/search_bar_gem.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -145,8 +146,9 @@ class _HomeState extends State<Home> {
   // Function to send the POST request to your backend API
   Future<void> fetchRecipeData(String url) async {
 
-    final apiUrl = "https://recipe-scraper-service-239433712372.asia-south1.run.app/scrape";
-
+    //final apiUrl = "https://recipe-scraper-service-239433712372.asia-south1.run.app/scrape";
+    //final apiUrl = "http://127.0.0.1:8000/scrape"; //for phone
+    final apiUrl = "http://10.0.2.2:8000/scrape"; //for emulator
 
     try {
       final response = await http.post(
@@ -330,20 +332,18 @@ class _HomeState extends State<Home> {
                 SizedBox(height: 10),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: Expanded(
-                    child: Row(
-                      children: staticRecipes.map((recipe) {
-                        return RecipeCard(
-                          title: recipe['title']!,
-                          description: recipe['description']!,
-                          imageUrl: recipe['image']!,
-                          time: recipe['time']!,
-                          difficulty: recipe['difficulty']!,
-                          calories: recipe['calories']!,
-                          details: recipe['details']!,
-                        );
-                      }).toList(),
-                    ),
+                  child: Row(
+                    children: staticRecipes.map((recipe) {
+                      return RecipeCard(
+                        title: recipe['title']!,
+                        description: recipe['description']!,
+                        imageUrl: recipe['image']!,
+                        time: recipe['time']!,
+                        difficulty: recipe['difficulty']!,
+                        calories: recipe['calories']!,
+                        details: recipe['details']!,
+                      );
+                    }).toList(),
                   ),
                 ),
                 SizedBox(height: 20),

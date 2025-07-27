@@ -79,5 +79,86 @@
             "Instructions not found"
         ],
         "url": "https://www.allrecipes.com/recipe/17481/simple-white-cake/"
+    },
+    {
+        "title": "Simple White Cake",
+        "ingredients": [
+            {
+                "quantity": 0.5,
+                "unit": "cup",
+                "ingredient": "1 all purpose flour",
+                "notes": [],
+                "size_modifier": null,
+                "text": "1 \u00bd cups all-purpose flour",
+                "grams": 62.5,
+                "message": "Converted 0.5 cup flour"
+            },
+            {
+                "quantity": 2.0,
+                "unit": "unit",
+                "ingredient": "2 eggs",
+                "notes": [],
+                "size_modifier": "large",
+                "text": "2 large eggs",
+                "grams": 100.0,
+                "message": "Converted 2.0 large egg",
+                "original_text": "2 large eggs"
+            },
+            {
+                "quantity": 2.0,
+                "unit": "tsp",
+                "ingredient": "vanilla extract",
+                "notes": [],
+                "size_modifier": null,
+                "text": "2 teaspoons vanilla extract",
+                "grams": null,
+                "message": "Unknown ingredient: vanilla extract",
+                "original_text": "2 teaspoons vanilla extract"
+            },
+            {
+                "quantity": 0.5,
+                "unit": "cup",
+                "ingredient": "unsalted butter",
+                "notes": [],
+                "size_modifier": null,
+                "text": "\u00bd cup unsalted butter",
+                "grams": 150.0,
+                "message": "Converted 0.5 cup salt"
+            },
+            {
+                "quantity": 1.0,
+                "unit": "cup",
+                "ingredient": "white sugar",
+                "notes": [],
+                "size_modifier": null,
+                "text": "1 cup white sugar",
+                "grams": 200.0,
+                "message": "Converted 1.0 cup sugar"
+            },
+            {
+                "quantity": 0.75,
+                "unit": "tsp",
+                "ingredient": "1 baking powder",
+                "notes": [],
+                "size_modifier": null,
+                "text": "1 \u00be teaspoons baking powder",
+                "grams": 3.6,
+                "message": "Converted 0.75 tsp baking powder"
+            },
+            {
+                "quantity": 0.5,
+                "unit": "cup",
+                "ingredient": "milk",
+                "notes": [],
+                "size_modifier": null,
+                "text": "\u00bd cup milk",
+                "grams": 122.5,
+                "message": "Converted 0.5 cup milk"
+            }
+        ],
+        "instructions": [
+            "Instructions not found"
+        ],
+        "url": "https://www.allrecipes.com/recipe/17481/simple-white-cake/"
     }
 ]
