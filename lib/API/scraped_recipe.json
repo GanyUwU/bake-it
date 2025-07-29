@@ -1,164 +1,610 @@
 [
     {
-        "title": "Simple White Cake",
+        "title": "BEST Classic Italian Tiramisu (Complete Guide)",
         "ingredients": [
             {
-                "quantity": 0.75,
-                "unit": "tsp",
-                "ingredient": "1 baking powder",
-                "notes": [],
-                "size_modifier": null,
-                "text": "1 \u00be teaspoons baking powder",
-                "grams": 3.6,
-                "message": "Converted 0.75 tsp baking powder"
+                "quantity": 16.0,
+                "unit": "oz",
+                "ingredient": "Mascarpone cheese (450g)",
+                "modifiers": [
+                    "cold"
+                ],
+                "original": "16 oz Mascarpone cheese (450g), cold from the fridge - I recommend Galbani",
+                "grams": 453.6,
+                "quantity_span": [
+                    0,
+                    2
+                ],
+                "unit_span": [
+                    3,
+                    5
+                ],
+                "ingredient_span": [
+                    6,
+                    74
+                ],
+                "modifier_spans": [
+                    [
+                        32,
+                        36
+                    ]
+                ]
+            },
+            {
+                "quantity": 0.3333333333333333,
+                "unit": "cup",
+                "ingredient": "In a separate heat-proof bowl",
+                "modifiers": [
+                    "light"
+                ],
+                "original": "In a separate heat-proof bowl, add the egg yolks and â…“ cup sugar . Boil 1-2\" of water in a saucepan and reduce heat to the lowest setting. Place the bowl with egg yolks and sugar on top of the saucepan such that the water does not touch the bottom of the bowl. This is a double boiler. Whisk on medium-high speed for exactly 2 minutes, then remove from heat. The mixture will be light and fluffy. Do not overmix or overheat as it can become grainy*",
+                "grams": 40.0,
+                "quantity_span": [
+                    53,
+                    54
+                ],
+                "unit_span": [
+                    55,
+                    58
+                ],
+                "ingredient_span": [
+                    0,
+                    447
+                ],
+                "modifier_spans": [
+                    [
+                        379,
+                        384
+                    ]
+                ]
+            },
+            {
+                "quantity": 0.3333333333333333,
+                "unit": "cup",
+                "ingredient": "In a separate clean bowl",
+                "modifiers": [
+                    "boiling"
+                ],
+                "original": "In a separate clean bowl, add the egg whites and remaining â…“ cup sugar . Place on the saucepan with boiling water again, and whisk on medium-high speed with a clean whisk until the mixture reaches 160F (5-8 minutes). Remove from heat and keep whisking until a glossy, stiff meringue forms*",
+                "grams": 40.0,
+                "quantity_span": [
+                    59,
+                    60
+                ],
+                "unit_span": [
+                    61,
+                    64
+                ],
+                "ingredient_span": [
+                    0,
+                    288
+                ],
+                "modifier_spans": [
+                    [
+                        100,
+                        107
+                    ]
+                ]
+            },
+            {
+                "quantity": 1.5,
+                "unit": "cup",
+                "ingredient": "cream",
+                "modifiers": [
+                    "heavy"
+                ],
+                "original": "1 Â½ cup heavy cream, chilled (360g) OR 4 egg whites",
+                "grams": 180.0,
+                "quantity_span": [
+                    0,
+                    3
+                ],
+                "unit_span": [
+                    4,
+                    7
+                ],
+                "ingredient_span": [
+                    14,
+                    51
+                ],
+                "modifier_spans": [
+                    [
+                        8,
+                        13
+                    ]
+                ]
             },
             {
                 "quantity": 2.0,
-                "unit": "tsp",
-                "ingredient": "vanilla extract",
-                "notes": [],
-                "size_modifier": null,
-                "text": "2 teaspoons vanilla extract",
+                "unit": "tablespoon",
+                "ingredient": "cocoa powder to dust",
+                "modifiers": [],
+                "original": "2 tablespoon cocoa powder to dust",
+                "grams": 30.0,
+                "quantity_span": [
+                    0,
+                    1
+                ],
+                "unit_span": [
+                    2,
+                    12
+                ],
+                "ingredient_span": [
+                    13,
+                    33
+                ],
+                "modifier_spans": []
+            },
+            {
+                "quantity": 0.75,
+                "unit": "cup",
+                "ingredient": "Sugar : I originally shared this recipe with Â¾ cup of sugar",
+                "modifiers": [],
+                "original": "Sugar : I originally shared this recipe with Â¾ cup of sugar, but have since found that it is even better with just â…” cup",
+                "grams": 90.0,
+                "quantity_span": [
+                    45,
+                    46
+                ],
+                "unit_span": [
+                    47,
+                    50
+                ],
+                "ingredient_span": [
+                    0,
+                    120
+                ],
+                "modifier_spans": []
+            },
+            {
+                "quantity": 0.6666666666666666,
+                "unit": "cup",
+                "ingredient": "granulated or caster sugar (133g)* - if using egg whites",
+                "modifiers": [],
+                "original": "â…” cup granulated or caster sugar (133g)* - if using egg whites, divide into 2 portions of â…“ cup and â…“ cup",
+                "grams": 133.33333333333331,
+                "quantity_span": [
+                    0,
+                    1
+                ],
+                "unit_span": [
+                    2,
+                    5
+                ],
+                "ingredient_span": [
+                    6,
+                    105
+                ],
+                "modifier_spans": []
+            },
+            {
+                "quantity": 5.0,
+                "unit": "can",
+                "ingredient": "Mariya Zoha says May 05",
+                "modifiers": [
+                    "half",
+                    "half"
+                ],
+                "original": "Mariya Zoha says May 05, 2024 at 2:54 am Hi Zoha! (We have the same name lol) I have made this well-over 5 times already (with cream and not egg whites), and it tastes amazing!! Although, I have one recurring issue which I hope you can help me with.. I have made this in smaller single-serve cups, as well as the full batch in a 6\" square container. I always find that my tiramisu melts very quickly. Especially in my 6\" batch, the cream firms up at the sides, but not at the center (when I shake the container, you can see the cream \"wobble\") Is there a way to fix this? Maybe to add more cream, or to make it half egg whites, and half cream? Or maybe it's just the weather at my place (Malaysia).. I have even tried whipping my cream and mascarpone together in an ice bowl, and it would still melt very quickly after I set my tiramisu. I am sure the cream is NOT over-mixed. I hope you can help me with this! I admire the dedication you put into your website. Your recipes are great ðŸ™‚ Reply Zoha says July 10, 2024 at 1:29 pm Hi Mariya! It sounds like you may not be whipping the cream long enough. And are you making any ingredient substitutions? Reply Susan says March 24, 2025 at 3:30 pm Tiramisu is one of my all-time favorite desserts and this was my first time making it myself. (I did add a little espresso powder to the cream while folding in, for a little extra coffee kick.)  This recipe was so easy to follow and it was absolutely delicious. Itâ€™ll be my go-to from now on! Reply",
                 "grams": null,
-                "message": "Unknown ingredient: vanilla extract",
-                "original_text": "2 teaspoons vanilla extract"
+                "quantity_span": [
+                    21,
+                    23
+                ],
+                "unit_span": [
+                    232,
+                    235
+                ],
+                "ingredient_span": [
+                    0,
+                    1491
+                ],
+                "modifier_spans": [
+                    [
+                        611,
+                        615
+                    ],
+                    [
+                        632,
+                        636
+                    ]
+                ]
             },
             {
-                "quantity": 0.5,
+                "quantity": 0.6666666666666666,
                 "unit": "cup",
-                "ingredient": "unsalted butter",
-                "notes": [],
-                "size_modifier": null,
-                "text": "\u00bd cup unsalted butter",
-                "grams": 150.0,
-                "message": "Converted 0.5 cup salt"
+                "ingredient": "In a separate heat-proof bowl",
+                "modifiers": [
+                    "light"
+                ],
+                "original": "In a separate heat-proof bowl, add the egg yolks and â…” cup sugar . Boil 1-2\" of water in a saucepan and reduce heat to the lowest setting. Place the bowl with egg yolks and sugar on top of the saucepan such that the water does not touch the bottom of the bowl. This is a double boiler. Whisk on medium-high speed for exactly 2 minutes, then remove from heat. The mixture will be light and fluffy. Do not overmix or overheat as it can become grainy*",
+                "grams": 80.0,
+                "quantity_span": [
+                    53,
+                    54
+                ],
+                "unit_span": [
+                    55,
+                    58
+                ],
+                "ingredient_span": [
+                    0,
+                    447
+                ],
+                "modifier_spans": [
+                    [
+                        379,
+                        384
+                    ]
+                ]
             },
             {
-                "quantity": 0.5,
+                "quantity": 1.5,
                 "unit": "cup",
-                "ingredient": "1 all purpose flour",
-                "notes": [],
-                "size_modifier": null,
-                "text": "1 \u00bd cups all-purpose flour",
-                "grams": 62.5,
-                "message": "Converted 0.5 cup flour"
-            },
-            {
-                "quantity": 0.5,
-                "unit": "cup",
-                "ingredient": "milk",
-                "notes": [],
-                "size_modifier": null,
-                "text": "\u00bd cup milk",
-                "grams": 122.5,
-                "message": "Converted 0.5 cup milk"
+                "ingredient": "strong black coffee",
+                "modifiers": [
+                    "room temperature"
+                ],
+                "original": "1 Â½ cup strong black coffee, room temperature (360g)*",
+                "grams": 180.0,
+                "quantity_span": [
+                    0,
+                    3
+                ],
+                "unit_span": [
+                    4,
+                    7
+                ],
+                "ingredient_span": [
+                    8,
+                    51
+                ],
+                "modifier_spans": [
+                    [
+                        29,
+                        45
+                    ]
+                ]
             },
             {
                 "quantity": 1.0,
-                "unit": "cup",
-                "ingredient": "white sugar",
-                "notes": [],
-                "size_modifier": null,
-                "text": "1 cup white sugar",
-                "grams": 200.0,
-                "message": "Converted 1.0 cup sugar"
+                "unit": "teaspoon",
+                "ingredient": "vanilla",
+                "modifiers": [],
+                "original": "1 teaspoon vanilla",
+                "grams": 5.0,
+                "quantity_span": [
+                    0,
+                    1
+                ],
+                "unit_span": [
+                    2,
+                    10
+                ],
+                "ingredient_span": [
+                    11,
+                    18
+                ],
+                "modifier_spans": []
             },
             {
-                "quantity": 2.0,
-                "unit": "unit",
-                "ingredient": "2 eggs",
-                "notes": [],
-                "size_modifier": "large",
-                "text": "2 large eggs",
-                "grams": 100.0,
-                "message": "Converted 2.0 large egg",
-                "original_text": "2 large eggs"
+                "quantity": 1.5,
+                "unit": "can",
+                "ingredient": "Coffee: The strength of coffee depends on how much you like its flavor (some people use espresso)",
+                "modifiers": [
+                    "hot",
+                    "ground"
+                ],
+                "original": "Coffee: The strength of coffee depends on how much you like its flavor (some people use espresso), but my general guidance is to make the coffee twice as strong as you usually would. It can be brewed coffee, French press coffee, or instant coffee mixed in hot water. I make it in a French press with 1 Â½ cup water and 4 tablespoon ground coffee",
+                "grams": null,
+                "quantity_span": [
+                    300,
+                    303
+                ],
+                "unit_span": [
+                    186,
+                    189
+                ],
+                "ingredient_span": [
+                    0,
+                    344
+                ],
+                "modifier_spans": [
+                    [
+                        256,
+                        259
+                    ],
+                    [
+                        331,
+                        337
+                    ]
+                ]
+            },
+            {
+                "quantity": 0.25,
+                "unit": "teaspoon",
+                "ingredient": "salt",
+                "modifiers": [],
+                "original": "Â¼ teaspoon salt",
+                "grams": 1.25,
+                "quantity_span": [
+                    0,
+                    1
+                ],
+                "unit_span": [
+                    2,
+                    10
+                ],
+                "ingredient_span": [
+                    11,
+                    15
+                ],
+                "modifier_spans": []
+            },
+            {
+                "quantity": 0.25,
+                "unit": "can",
+                "ingredient": "Adding rum: For those who prefer the alcoholic version",
+                "modifiers": [],
+                "original": "Adding rum: For those who prefer the alcoholic version, you can add up to Â¼ cup rum, divided between the mascarpone cream and the coffee soak",
+                "grams": null,
+                "quantity_span": [
+                    74,
+                    75
+                ],
+                "unit_span": [
+                    60,
+                    63
+                ],
+                "ingredient_span": [
+                    0,
+                    141
+                ],
+                "modifier_spans": []
+            },
+            {
+                "quantity": 1.0,
+                "unit": "cups",
+                "ingredient": "No Bake Salted Caramel Cheesecake",
+                "modifiers": [
+                    "salted"
+                ],
+                "original": "No Bake Salted Caramel Cheesecake Cups",
+                "grams": 120.0,
+                "quantity_span": null,
+                "unit_span": [
+                    34,
+                    38
+                ],
+                "ingredient_span": [
+                    0,
+                    33
+                ],
+                "modifier_spans": [
+                    [
+                        8,
+                        14
+                    ]
+                ]
+            },
+            {
+                "quantity": 1.0,
+                "unit": "can",
+                "ingredient": "Serving dish : I use a 8x9.5\" rectangular dish",
+                "modifiers": [],
+                "original": "Serving dish : I use a 8x9.5\" rectangular dish, but you can also use a 7x11\" dish, a 9x9\" dish, individual cups or even circular / oval dishes of similar size. Just trim the ladyfingers to fit accordingly",
+                "grams": null,
+                "quantity_span": [
+                    21,
+                    22
+                ],
+                "unit_span": [
+                    56,
+                    59
+                ],
+                "ingredient_span": [
+                    0,
+                    204
+                ],
+                "modifier_spans": []
             }
         ],
         "instructions": [
             "Instructions not found"
         ],
-        "url": "https://www.allrecipes.com/recipe/17481/simple-white-cake/"
+        "url": "https://bakewithzoha.com/best-classic-italian-tiramisu/"
     },
     {
-        "title": "Simple White Cake",
+        "title": "Old-Fashioned Shortcake",
         "ingredients": [
             {
                 "quantity": 0.5,
                 "unit": "cup",
-                "ingredient": "1 all purpose flour",
-                "notes": [],
-                "size_modifier": null,
-                "text": "1 \u00bd cups all-purpose flour",
-                "grams": 62.5,
-                "message": "Converted 0.5 cup flour"
-            },
-            {
-                "quantity": 2.0,
-                "unit": "unit",
-                "ingredient": "2 eggs",
-                "notes": [],
-                "size_modifier": "large",
-                "text": "2 large eggs",
-                "grams": 100.0,
-                "message": "Converted 2.0 large egg",
-                "original_text": "2 large eggs"
-            },
-            {
-                "quantity": 2.0,
-                "unit": "tsp",
-                "ingredient": "vanilla extract",
-                "notes": [],
-                "size_modifier": null,
-                "text": "2 teaspoons vanilla extract",
-                "grams": null,
-                "message": "Unknown ingredient: vanilla extract",
-                "original_text": "2 teaspoons vanilla extract"
+                "ingredient": "butter",
+                "modifiers": [
+                    "cold",
+                    "cubed"
+                ],
+                "original": "½ cup cold butter, cubed",
+                "grams": 112.5,
+                "quantity_span": [
+                    0,
+                    1
+                ],
+                "unit_span": [
+                    2,
+                    5
+                ],
+                "ingredient_span": [
+                    11,
+                    17
+                ],
+                "modifier_spans": [
+                    [
+                        6,
+                        10
+                    ],
+                    [
+                        19,
+                        24
+                    ]
+                ]
             },
             {
                 "quantity": 0.5,
-                "unit": "cup",
-                "ingredient": "unsalted butter",
-                "notes": [],
-                "size_modifier": null,
-                "text": "\u00bd cup unsalted butter",
-                "grams": 150.0,
-                "message": "Converted 0.5 cup salt"
+                "unit": "teaspoon",
+                "ingredient": "salt",
+                "modifiers": [],
+                "original": "½ teaspoon salt",
+                "grams": 2.5,
+                "quantity_span": [
+                    0,
+                    1
+                ],
+                "unit_span": [
+                    2,
+                    10
+                ],
+                "ingredient_span": [
+                    11,
+                    15
+                ],
+                "modifier_spans": []
+            },
+            {
+                "quantity": 4.0,
+                "unit": "teaspoons",
+                "ingredient": "baking powder",
+                "modifiers": [],
+                "original": "4 teaspoons baking powder",
+                "grams": 20.0,
+                "quantity_span": [
+                    0,
+                    1
+                ],
+                "unit_span": [
+                    2,
+                    11
+                ],
+                "ingredient_span": [
+                    12,
+                    25
+                ],
+                "modifier_spans": []
+            },
+            {
+                "quantity": 1.0,
+                "unit": "piece",
+                "ingredient": "large egg",
+                "modifiers": [],
+                "original": "1 large egg",
+                "grams": null,
+                "quantity_span": [
+                    0,
+                    1
+                ],
+                "unit_span": null,
+                "ingredient_span": [
+                    2,
+                    11
+                ],
+                "modifier_spans": []
             },
             {
                 "quantity": 1.0,
                 "unit": "cup",
                 "ingredient": "white sugar",
-                "notes": [],
-                "size_modifier": null,
-                "text": "1 cup white sugar",
+                "modifiers": [],
+                "original": "1 cup white sugar",
                 "grams": 200.0,
-                "message": "Converted 1.0 cup sugar"
+                "quantity_span": [
+                    0,
+                    1
+                ],
+                "unit_span": [
+                    2,
+                    5
+                ],
+                "ingredient_span": [
+                    6,
+                    17
+                ],
+                "modifier_spans": []
             },
             {
-                "quantity": 0.75,
-                "unit": "tsp",
-                "ingredient": "1 baking powder",
-                "notes": [],
-                "size_modifier": null,
-                "text": "1 \u00be teaspoons baking powder",
-                "grams": 3.6,
-                "message": "Converted 0.75 tsp baking powder"
+                "quantity": 0.25,
+                "unit": "teaspoon",
+                "ingredient": "nutmeg (Optional",
+                "modifiers": [
+                    "ground"
+                ],
+                "original": "¼ teaspoon ground nutmeg (Optional)",
+                "grams": 1.25,
+                "quantity_span": [
+                    0,
+                    1
+                ],
+                "unit_span": [
+                    2,
+                    10
+                ],
+                "ingredient_span": [
+                    18,
+                    34
+                ],
+                "modifier_spans": [
+                    [
+                        11,
+                        17
+                    ]
+                ]
             },
             {
-                "quantity": 0.5,
+                "quantity": 2.0,
+                "unit": "cups",
+                "ingredient": "all-purpose flour",
+                "modifiers": [],
+                "original": "2 cups all-purpose flour",
+                "grams": 250.0,
+                "quantity_span": [
+                    0,
+                    1
+                ],
+                "unit_span": [
+                    2,
+                    6
+                ],
+                "ingredient_span": [
+                    7,
+                    24
+                ],
+                "modifier_spans": []
+            },
+            {
+                "quantity": 0.3333333333333333,
                 "unit": "cup",
                 "ingredient": "milk",
-                "notes": [],
-                "size_modifier": null,
-                "text": "\u00bd cup milk",
-                "grams": 122.5,
-                "message": "Converted 0.5 cup milk"
+                "modifiers": [],
+                "original": "⅓ cup milk",
+                "grams": 81.66666666666666,
+                "quantity_span": [
+                    0,
+                    1
+                ],
+                "unit_span": [
+                    2,
+                    5
+                ],
+                "ingredient_span": [
+                    6,
+                    10
+                ],
+                "modifier_spans": []
             }
         ],
         "instructions": [
             "Instructions not found"
         ],
-        "url": "https://www.allrecipes.com/recipe/17481/simple-white-cake/"
+        "url": "https://www.allrecipes.com/recipe/222844/old-fashioned-shortcake/"
     }
 ]

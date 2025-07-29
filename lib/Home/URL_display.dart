@@ -1,4 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+import 'package:crypto/crypto.dart'; // Add to pubspec.yaml
+
+
+String generateRecipeId(List<Map<String, dynamic>> recipe) {
+  final jsonStr = jsonEncode(recipe);
+  final bytes = utf8.encode(jsonStr);
+  return sha1.convert(bytes).toString(); // Use SHA-1 hash
+}
+
+Future<void> saveRecipe(BuildContext context, String title, List<Map<String, dynamic>> recipe) async {
+  final user = FirebaseAuth.instance.currentUser;
+  final recipeId = generateRecipeId(recipe);
+  if (user == null) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("User not logged in.")),
+    );
+    return;
+  }
+
+  final uid = user.uid;
+  final firestore = FirebaseFirestore.instance;
+
+  try {
+    final docRef = firestore
+        .collection('users')
+        .doc(uid)
+        .collection('recipes')
+        .doc(recipeId);
+
+    final doc = await docRef.get();
+    if (doc.exists) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Recipe already saved!")),
+      );
+      return;
+    }
+
+    await docRef.set({
+      'title': title,
+      'ingredients': recipe,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Recipe saved to Firestore!")),
+    );
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Error saving recipe: $e")),
+    );
+  }
+}
 
 class Recipe {
   final String title;
@@ -8,6 +63,7 @@ class Recipe {
     required this.title,
     required this.ingredients,
   });
+  
 
   // Add factory method to parse API data
   factory Recipe.fromApiData(Map<String, dynamic> data) {
@@ -48,6 +104,19 @@ class Recipe {
       ingredients: ingredients,
     );
   }
+  // Add this constructor
+  factory Recipe.fromFirestore(Map<String, dynamic> data) {
+    return Recipe(
+      title: data['title'],
+      ingredients: (data['ingredients'] as List).map((ing) {
+        return Ingredient(
+          name: ing['name'],
+          amount: ing['amount'],
+          iconColor: Color(ing['iconColor']),
+        );
+      }).toList(),
+    );
+  }
 
   // Your existing method
   static Recipe Simple() {
@@ -61,6 +130,10 @@ class Recipe {
       ],
     );
   }
+
+  
+
+
 }
 
 class Ingredient {
@@ -89,6 +162,7 @@ class _RecipeDetailViewState extends State<RecipeDetailView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late Recipe _recipe;
+
 
   @override
   void initState() {
@@ -378,15 +452,33 @@ class _RecipeDetailViewState extends State<RecipeDetailView>
 
             const SizedBox(height: 24),
 
-            // Watch videos button
+            // Save recipe button
             Center(
               child: ElevatedButton.icon(
-                onPressed: () {},
+               onPressed: () {
+                    saveRecipe(
+                      context,
+                      _recipe.title,
+                      _recipe.ingredients.map((ingredient) => {
+                        'ingredient': ingredient.name,
+                        'quantity': ingredient.amount
+                      }).toList()
+                    );
+                  },
                 icon:
                 const Icon(Icons.play_circle_outline, color: Colors.white),
                 label: const Text(
-                  'Watch Video Tutorial',
+                  
+                  'Save this Recipe !',
                   style: TextStyle(color: Colors.white),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 24, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
                 ),
               ),
             ),
